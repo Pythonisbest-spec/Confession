@@ -42,7 +42,15 @@ function formatTime(timestamp) {
 function renderComment(comment) {
     const item = document.createElement("div");
     item.className = "comment_item";
-    item.textContent = typeof comment === "object" ? comment.content : comment;
+    
+    if (typeof comment === "object" && comment !== null) {
+        const content = comment.content || "";
+        const timeStr = comment.time ? formatTime(comment.time) : "";
+        
+        item.innerHTML = `<span class="comment_text">${content}</span>${timeStr ? `<span class="comment_time" style="font-size: 0.8em; color: #888; margin-left: 8px;">${timeStr}</span>` : ""}`;
+    } else {
+        item.textContent = comment;
+    }
     return item;
 }
 
