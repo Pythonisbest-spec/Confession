@@ -17,14 +17,14 @@ function loadLikedIds() {
     if (!raw) return [];
     try {
         const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.map(Number).filter(n => !isNaN(n)) : [];
+        return Array.isArray(parsed) ? parsed.map(String) : [];
     } catch (e) {
         return [];
     }
 }
 
 function saveLikedIds(ids) {
-    localStorage.setItem(LIKED_KEY, JSON.stringify(ids));
+    localStorage.setItem(LIKED_KEY, JSON.stringify(ids.map(String)));
 }
 
 function formatTime(timestamp) {
@@ -47,9 +47,9 @@ function renderComment(comment) {
 }
 
 function updateOrRenderBox(confession) {
-    const numId = Number(confession.rowId);
+    const strId = String(confession.rowId);
     let box = list.querySelector(`.box[data-id="${confession.rowId}"]`);
-    const isLiked = likedIds.includes(numId);
+    const isLiked = likedIds.includes(strId);
 
     if (!box) {
         box = document.createElement("div");
@@ -82,10 +82,10 @@ function updateOrRenderBox(confession) {
         commentToggle.addEventListener("click", () => {
             if (commentsSection.hidden) {
                 commentsSection.hidden = false;
-                openCommentRowIds.add(numId);
+                openCommentRowIds.add(strId);
             } else {
                 commentsSection.hidden = true;
-                openCommentRowIds.delete(numId);
+                openCommentRowIds.delete(strId);
             }
         });
 
@@ -111,7 +111,7 @@ function updateOrRenderBox(confession) {
     commentToggle.textContent = `💬 Bình luận (${confession.comments.length})`;
 
     const commentsSection = box.querySelector(".comments_section");
-    commentsSection.hidden = !openCommentRowIds.has(numId);
+    commentsSection.hidden = !openCommentRowIds.has(strId);
 
     const commentList = box.querySelector(".comment_list");
     commentList.innerHTML = "";
@@ -151,8 +151,8 @@ async function loadApprovedConfessions() {
         lastRawDataString = rawString;
 
         currentConfessions = data.map((item, index) => {
-            const numId = Number(item.rowId);
-            const existing = currentConfessions.find(c => Number(c.rowId) === numId);
+            const strId = String(item.rowId);
+            const existing = currentConfessions.find(c => String(c.rowId) === strId);
             const serverLikes = Number(item.likes) || 0;
             const likes = existing ? Math.max(existing.likes, serverLikes) : serverLikes;
 
@@ -173,13 +173,13 @@ async function loadApprovedConfessions() {
 }
 
 async function toggleLike(rowId) {
-    const numId = Number(rowId);
-    if (likedIds.includes(numId)) return;
+    const strId = String(rowId);
+    if (likedIds.includes(strId)) return;
 
-    likedIds.push(numId);
+    likedIds.push(strId);
     saveLikedIds(likedIds);
 
-    const confession = currentConfessions.find(c => Number(c.rowId) === numId);
+    const confession = currentConfessions.find(c => String(c.rowId) === strId);
     if (confession) {
         confession.likes = (confession.likes || 0) + 1;
         renderAll();
@@ -190,7 +190,7 @@ async function toggleLike(rowId) {
             method: "POST",
             mode: "no-cors",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "like", rowId: numId })
+            body: JSON.stringify({ action: "like", rowId: Number(rowId) })
         });
     } catch (err) {
         console.error("Lỗi tim:", err);
