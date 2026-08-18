@@ -15,11 +15,16 @@ let lastRawDataString = "";
 function loadLikedIds() {
     const raw = localStorage.getItem(LIKED_KEY);
     if (!raw) return [];
-    try { return JSON.parse(raw); } catch (e) { return []; }
+    try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.map(Number).filter(n => !isNaN(n)) : [];
+    } catch (e) {
+        return [];
+    }
 }
 
-function saveLikedIds(likedIds) {
-    localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
+function saveLikedIds(ids) {
+    localStorage.setItem(LIKED_KEY, JSON.stringify(ids));
 }
 
 function formatTime(timestamp) {
@@ -41,113 +46,98 @@ function renderComment(comment) {
     return item;
 }
 
-function renderBox(confession) {
-    const box = document.createElement("div");
-    box.className = "box";
-    box.dataset.id = confession.rowId;
+function updateOrRenderBox(confession) {
+    const numId = Number(confession.rowId);
+    let box = list.querySelector(`.box[data-id="${confession.rowId}"]`);
+    const isLiked = likedIds.includes(numId);
 
-    const title = document.createElement("div");
-    title.className = "confession_title";
-    title.textContent = `Confession #${String(confession.number).padStart(3, "0")}:`;
+    if (!box) {
+        box = document.createElement("div");
+        box.className = "box";
+        box.dataset.id = confession.rowId;
 
-    const contentDiv = document.createElement("div");
-    contentDiv.className = "confession_content";
-    const p = document.createElement("p");
-    p.textContent = confession.content;
-    contentDiv.appendChild(p);
+        box.innerHTML = `
+            <div class="confession_title">Confession #${String(confession.number).padStart(3, "0")}:</div>
+            <div class="confession_content"><p></p></div>
+            <div class="confession_meta"><span class="confession_time"></span></div>
+            <div class="confession_actions">
+                <button type="button" class="heart_btn"></button>
+                <button type="button" class="comment_toggle"></button>
+            </div>
+            <div class="comments_section">
+                <div class="comment_list"></div>
+                <form class="comment_form">
+                    <input type="text" class="comment_input" placeholder="Viết bình luận..." maxlength="200" />
+                    <button type="submit" class="comment_submit">Gửi</button>
+                </form>
+            </div>
+        `;
 
-    const meta = document.createElement("div");
-    meta.className = "confession_meta";
+        const heartBtn = box.querySelector(".heart_btn");
+        heartBtn.addEventListener("click", () => toggleLike(confession.rowId));
 
-    const time = document.createElement("span");
-    time.className = "confession_time";
-    time.textContent = formatTime(confession.time);
-    meta.appendChild(time);
+        const commentToggle = box.querySelector(".comment_toggle");
+        const commentsSection = box.querySelector(".comments_section");
 
-    const actions = document.createElement("div");
-    actions.className = "confession_actions";
+        commentToggle.addEventListener("click", () => {
+            if (commentsSection.hidden) {
+                commentsSection.hidden = false;
+                openCommentRowIds.add(numId);
+            } else {
+                commentsSection.hidden = true;
+                openCommentRowIds.delete(numId);
+            }
+        });
 
-    const isLiked = likedIds.includes(confession.rowId);
+        const commentForm = box.querySelector(".comment_form");
+        const commentInput = box.querySelector(".comment_input");
+        commentForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const text = commentInput.value.trim();
+            if (!text) return;
+            commentInput.value = "";
+            await addComment(confession.rowId, text);
+        });
+    }
 
-    const heartBtn = document.createElement("button");
-    heartBtn.type = "button";
+    box.querySelector(".confession_content p").textContent = confession.content;
+    box.querySelector(".confession_time").textContent = formatTime(confession.time);
+
+    const heartBtn = box.querySelector(".heart_btn");
     heartBtn.className = "heart_btn" + (isLiked ? " liked" : "");
     heartBtn.innerHTML = `${isLiked ? "❤️" : "🤍"} <span class="heart_count">${confession.likes}</span>`;
-    heartBtn.addEventListener("click", () => toggleLike(confession.rowId));
 
-    const commentToggle = document.createElement("button");
-    commentToggle.type = "button";
-    commentToggle.className = "comment_toggle";
+    const commentToggle = box.querySelector(".comment_toggle");
     commentToggle.textContent = `💬 Bình luận (${confession.comments.length})`;
 
-    actions.appendChild(heartBtn);
-    actions.appendChild(commentToggle);
+    const commentsSection = box.querySelector(".comments_section");
+    commentsSection.hidden = !openCommentRowIds.has(numId);
 
-    const commentsSection = document.createElement("div");
-    commentsSection.className = "comments_section";
-    commentsSection.hidden = !openCommentRowIds.has(confession.rowId);
-
-    const commentList = document.createElement("div");
-    commentList.className = "comment_list";
+    const commentList = box.querySelector(".comment_list");
+    commentList.innerHTML = "";
     confession.comments.forEach((c) => {
         commentList.appendChild(renderComment(c));
     });
-
-    const commentForm = document.createElement("form");
-    commentForm.className = "comment_form";
-
-    const commentInput = document.createElement("input");
-    commentInput.className = "comment_input";
-    commentInput.placeholder = "Viết bình luận...";
-    commentInput.maxLength = 200;
-
-    const commentSubmit = document.createElement("button");
-    commentSubmit.type = "submit";
-    commentSubmit.className = "comment_submit";
-    commentSubmit.textContent = "Gửi";
-
-    commentForm.appendChild(commentInput);
-    commentForm.appendChild(commentSubmit);
-
-    commentForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const text = commentInput.value.trim();
-        if (text === "") return;
-        commentInput.value = "";
-        await addComment(confession.rowId, text);
-    });
-
-    commentsSection.appendChild(commentList);
-    commentsSection.appendChild(commentForm);
-
-    commentToggle.addEventListener("click", () => {
-        if (commentsSection.hidden) {
-            commentsSection.hidden = false;
-            openCommentRowIds.add(confession.rowId);
-        } else {
-            commentsSection.hidden = true;
-            openCommentRowIds.delete(confession.rowId);
-        }
-    });
-
-    box.appendChild(title);
-    box.appendChild(contentDiv);
-    box.appendChild(meta);
-    box.appendChild(actions);
-    box.appendChild(commentsSection);
 
     return box;
 }
 
 function renderAll() {
-    list.innerHTML = "";
     if (currentConfessions.length === 0) {
         list.innerHTML = "<p>Chưa có confession nào được duyệt.</p>";
         return;
     }
 
+    const emptyMsg = list.querySelector("p");
+    if (emptyMsg && emptyMsg.textContent.includes("Chưa có confession")) {
+        list.innerHTML = "";
+    }
+
     [...currentConfessions].reverse().forEach((c) => {
-        list.appendChild(renderBox(c));
+        const box = updateOrRenderBox(c);
+        if (!box.parentNode) {
+            list.appendChild(box);
+        }
     });
 }
 
@@ -176,12 +166,13 @@ async function loadApprovedConfessions() {
 }
 
 async function toggleLike(rowId) {
-    if (likedIds.includes(rowId)) return;
+    const numId = Number(rowId);
+    if (likedIds.includes(numId)) return;
 
-    likedIds.push(rowId);
+    likedIds.push(numId);
     saveLikedIds(likedIds);
 
-    const confession = currentConfessions.find(c => c.rowId === rowId);
+    const confession = currentConfessions.find(c => Number(c.rowId) === numId);
     if (confession) {
         confession.likes += 1;
         renderAll();
@@ -191,7 +182,7 @@ async function toggleLike(rowId) {
         const response = await fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "like", rowId: rowId })
+            body: JSON.stringify({ action: "like", rowId: numId })
         });
         const result = await response.json();
         if (result && typeof result.likes === "number" && confession) {
@@ -208,7 +199,7 @@ async function addComment(rowId, text) {
         await fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "comment", rowId: rowId, content: text })
+            body: JSON.stringify({ action: "comment", rowId: Number(rowId), content: text })
         });
         lastRawDataString = "";
         await loadApprovedConfessions();
@@ -230,34 +221,36 @@ if (input) {
     input.addEventListener("input", clearError);
 }
 
-form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const content = input.value.trim();
+if (form) {
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const content = input.value.trim();
 
-    if (content === "") {
-        showError("Bạn chưa nhập nội dung confession.");
-        return;
-    }
+        if (content === "") {
+            showError("Bạn chưa nhập nội dung confession.");
+            return;
+        }
 
-    if (content.length > MAX_LENGTH) {
-        showError(`Confession quá dài, tối đa ${MAX_LENGTH} ký tự.`);
-        return;
-    }
+        if (content.length > MAX_LENGTH) {
+            showError(`Confession quá dài, tối đa ${MAX_LENGTH} ký tự.`);
+            return;
+        }
 
-    try {
-        await fetch(SCRIPT_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "confession", content: content })
-        });
-        alert("Đã gửi confession thành công! Vui lòng chờ admin duyệt.");
-        input.value = "";
-        clearError();
-    } catch (err) {
-        console.error("Lỗi gửi confession:", err);
-        alert("Có lỗi xảy ra, vui lòng thử lại!");
-    }
-});
+        try {
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "confession", content: content })
+            });
+            alert("Đã gửi confession thành công! Vui lòng chờ admin duyệt.");
+            input.value = "";
+            clearError();
+        } catch (err) {
+            console.error("Lỗi gửi confession:", err);
+            alert("Có lỗi xảy ra, vui lòng thử lại!");
+        }
+    });
+}
 
 loadApprovedConfessions();
 setInterval(loadApprovedConfessions, 5000);
