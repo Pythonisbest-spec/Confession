@@ -1,5 +1,4 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby40A3Y3AJq5d7CNI-9fGoJxzULYgak4yuPY1GEol_djAQdQkFT_JoQpHmyLViyp91UJw/exec";
-const COMMENTS_KEY = "nhs_comments_map";
 const LIKED_KEY = "nhs_liked_ids";
 const MAX_LENGTH = 500;
 
@@ -9,10 +8,7 @@ const errorBox = document.querySelector("#form_error");
 const list = document.querySelector("#confession_list");
 
 let likedIds = loadLikedIds();
-let commentsMap = loadCommentsMap();
 let currentConfessions = [];
-
-// ---------- LocalStorage Helpers ----------
 
 function loadLikedIds() {
     const raw = localStorage.getItem(LIKED_KEY);
@@ -23,18 +19,6 @@ function loadLikedIds() {
 function saveLikedIds(likedIds) {
     localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
 }
-
-function loadCommentsMap() {
-    const raw = localStorage.getItem(COMMENTS_KEY);
-    if (!raw) return {};
-    try { return JSON.parse(raw); } catch (e) { return {}; }
-}
-
-function saveCommentsMap(map) {
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(map));
-}
-
-// ---------- Render ----------
 
 function formatTime(timestamp) {
     if (!timestamp) return "";
@@ -56,12 +40,9 @@ function renderComment(comment) {
 }
 
 function renderBox(confession) {
-    if (typeof confession.likes !== "number") confession.likes = 0;
-    if (!Array.isArray(confession.comments)) confession.comments = [];
-
     const box = document.createElement("div");
     box.className = "box";
-    box.dataset.id = confession.id;
+    box.dataset.id = confession.rowId;
 
     const title = document.createElement("div");
     title.className = "confession_title";
@@ -78,21 +59,19 @@ function renderBox(confession) {
 
     const time = document.createElement("span");
     time.className = "confession_time";
-    time.textContent = formatTime(confession.createdAt);
-
+    time.textContent = formatTime(confession.time);
     meta.appendChild(time);
 
-    // ----- Thả tim & nút bình luận -----
     const actions = document.createElement("div");
     actions.className = "confession_actions";
 
-    const isLiked = likedIds.includes(confession.id);
+    const isLiked = likedIds.includes(confession.rowId);
 
     const heartBtn = document.createElement("button");
     heartBtn.type = "button";
     heartBtn.className = "heart_btn" + (isLiked ? " liked" : "");
     heartBtn.innerHTML = `${isLiked ? "❤️" : "🤍"} <span class="heart_count">${confession.likes}</span>`;
-    heartBtn.addEventListener("click", () => toggleLike(confession.id));
+    heartBtn.addEventListener("click", () => toggleLike(confession.rowId));
 
     const commentToggle = document.createElement("button");
     commentToggle.type = "button";
@@ -102,7 +81,6 @@ function renderBox(confession) {
     actions.appendChild(heartBtn);
     actions.appendChild(commentToggle);
 
-    // ----- Khu vực bình luận -----
     const commentsSection = document.createElement("div");
     commentsSection.className = "comments_section";
     commentsSection.hidden = true;
@@ -133,7 +111,7 @@ function renderBox(confession) {
         event.preventDefault();
         const text = commentInput.value.trim();
         if (text === "") return;
-        addComment(confession.id, text);
+        addComment(confession.rowId, text);
     });
 
     commentsSection.appendChild(commentList);
@@ -154,7 +132,6 @@ function renderBox(confession) {
 
 function renderAll() {
     list.innerHTML = "";
-
     if (currentConfessions.length === 0) {
         list.innerHTML = "<p>Chưa có confession nào được duyệt.</p>";
         return;
@@ -165,28 +142,19 @@ function renderAll() {
     });
 }
 
-// ---------- Actions ----------
-
 async function loadApprovedConfessions() {
-    list.innerHTML = "<p>Đang tải danh sách confession...</p>";
     try {
         const response = await fetch(SCRIPT_URL);
         const data = await response.json();
 
-        currentConfessions = data.map((item, index) => {
-            const id = "cfs_" + (item.time ? new Date(item.time).getTime() : index) + "_" + index;
-            const comments = commentsMap[id] || [];
-            const isLiked = likedIds.includes(id);
-
-            return {
-                id: id,
-                number: index + 1,
-                content: item.content,
-                createdAt: item.time,
-                likes: isLiked ? 1 : 0,
-                comments: comments
-            };
-        });
+        currentConfessions = data.map((item, index) => ({
+            rowId: item.rowId,
+            number: index + 1,
+            content: item.content,
+            time: item.time,
+            likes: item.likes || 0,
+            comments: item.comments || []
+        }));
 
         renderAll();
     } catch (err) {
@@ -195,42 +163,40 @@ async function loadApprovedConfessions() {
     }
 }
 
-function toggleLike(id) {
-    const confession = currentConfessions.find((c) => c.id === id);
-    if (!confession) return;
+async function toggleLike(rowId) {
+    if (likedIds.includes(rowId)) return;
 
-    const alreadyLiked = likedIds.includes(id);
+    likedIds.push(rowId);
+    saveLikedIds(likedIds);
 
-    if (alreadyLiked) {
-        confession.likes = Math.max(0, confession.likes - 1);
-        likedIds = likedIds.filter((likedId) => likedId !== id);
-    } else {
+    const confession = currentConfessions.find(c => c.rowId === rowId);
+    if (confession) {
         confession.likes += 1;
-        likedIds.push(id);
+        renderAll();
     }
 
-    saveLikedIds(likedIds);
-    renderAll();
+    try {
+        await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "like", rowId: rowId })
+        });
+    } catch (err) {
+        console.error("Lỗi tim:", err);
+    }
 }
 
-function addComment(confessionId, text) {
-    const confession = currentConfessions.find((c) => c.id === confessionId);
-    if (!confession) return;
-
-    const newComment = {
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-        content: text,
-        createdAt: Date.now(),
-    };
-
-    confession.comments.push(newComment);
-    commentsMap[confessionId] = confession.comments;
-    saveCommentsMap(commentsMap);
-
-    renderAll();
+async function addComment(rowId, text) {
+    try {
+        await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "comment", rowId: rowId, content: text })
+        });
+        loadApprovedConfessions();
+    } catch (err) {
+        console.error("Lỗi bình luận:", err);
+        alert("Không thể gửi bình luận, vui lòng thử lại!");
+    }
 }
-
-// ---------- Validation & Form ----------
 
 function showError(message) {
     if (errorBox) errorBox.textContent = message;
@@ -246,7 +212,6 @@ if (input) {
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     const content = input.value.trim();
 
     if (content === "") {
@@ -272,7 +237,5 @@ form.addEventListener("submit", async (event) => {
         alert("Có lỗi xảy ra, vui lòng thử lại!");
     }
 });
-
-// ---------- Init ----------
 
 loadApprovedConfessions();

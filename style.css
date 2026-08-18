@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0;
     font-family: Georgia, "Times New Roman", serif;
@@ -5,31 +9,33 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px;
 }
 
 #picture {
-    position: absolute;
-    top: 50px;
-    left: 20px;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 #picture img {
-    width: 280px;
+    width: 100%;
+    max-width: 280px;
+    height: auto;
     mix-blend-mode: multiply;
 }
 
 h1 {
-    position: relative;
-    top: 90px;
-    left: 560px;
-    margin: 0;
+    margin: 0 0 10px 0;
+    text-align: center;
 }
 
 #send_confession {
-    position: relative;
-    top: 100px;
-    left: 580px;
     color: blue;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 #send_confession h3 {
@@ -37,40 +43,46 @@ h1 {
 }
 
 #confession_form {
-    position: relative;
-    top: 110px;
-    left: 560px;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    gap: 6px;
 }
 
 #confession_input {
-    padding: 4px 6px;
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
     font-family: inherit;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 #confession_form button {
-    padding: 4px 12px;
+    padding: 6px 12px;
     font-family: inherit;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 #form_error {
-    position: relative;
-    top: 120px;
-    left: 562px;
     color: darkred;
     font-size: 0.85rem;
-    max-width: 320px;
-    margin: 0;
+    width: 100%;
+    max-width: 500px;
+    margin: 6px 0 0 0;
+    text-align: left;
 }
+
 #form_error:empty {
     display: none;
 }
 
 #confession_list {
-    position: relative;
-    top: 130px;
-    left: 560px;
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
+    margin-top: 15px;
     padding-bottom: 60px;
 }
 
@@ -80,6 +92,8 @@ h1 {
     border-radius: 6px;
     padding: 10px 14px;
     margin-bottom: 14px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
 }
 
 .confession_title {
@@ -126,6 +140,7 @@ a {
     left: 15px;
     color: navy;
 }
+
 /* ---------- Thả tim & bình luận ---------- */
 
 .confession_actions {
@@ -198,6 +213,7 @@ a {
     padding: 6px 10px;
     font-size: 0.85rem;
     font-family: Arial, sans-serif;
+    word-break: break-word;
 }
 
 .comment_form {
@@ -207,9 +223,10 @@ a {
 
 .comment_input {
     flex: 1;
+    min-width: 0;
     padding: 4px 8px;
     font-family: inherit;
-    font-size: 0.85rem;
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
@@ -221,8 +238,23 @@ a {
     border: 1px solid #ccc;
     background: white;
     border-radius: 4px;
+    white-space: nowrap;
 }
 
 .comment_submit:hover {
     background: #f0f0f0;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 15px 10px;
+    }
+
+    #picture img {
+        max-width: 200px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
 }
