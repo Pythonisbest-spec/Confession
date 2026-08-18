@@ -14,7 +14,13 @@ body {
     align-items: center;
     padding: 20px 12px;
 }
-
+h4{
+    color:red;
+}
+#chu_thich{
+    font-family: sans-serif;
+    font-weight: 600;
+}
 #picture {
     text-align: center;
     margin-bottom: 10px;
