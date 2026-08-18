@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1AkoigfLZU1KN9na1h08soFV83eqPi4TFz5vQzs7PxcZ3yr_7YFPk_wqADPa4t1SFzg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQW25_w_EmNgBsBR2Ud7_dj2Ev6hwjp-G3qLqLwWARGHuCFRin9MOrIeLkRkSuIc8aYg/exec";
 const LIKED_KEY = "nhs_liked_ids";
 const MAX_LENGTH = 500;
 
@@ -9,6 +9,8 @@ const list = document.querySelector("#confession_list");
 
 let likedIds = loadLikedIds();
 let currentConfessions = [];
+let openCommentRowIds = new Set();
+let lastRawDataString = "";
 
 function loadLikedIds() {
     const raw = localStorage.getItem(LIKED_KEY);
@@ -83,7 +85,7 @@ function renderBox(confession) {
 
     const commentsSection = document.createElement("div");
     commentsSection.className = "comments_section";
-    commentsSection.hidden = true;
+    commentsSection.hidden = !openCommentRowIds.has(confession.rowId);
 
     const commentList = document.createElement("div");
     commentList.className = "comment_list";
@@ -119,7 +121,13 @@ function renderBox(confession) {
     commentsSection.appendChild(commentForm);
 
     commentToggle.addEventListener("click", () => {
-        commentsSection.hidden = !commentsSection.hidden;
+        if (commentsSection.hidden) {
+            commentsSection.hidden = false;
+            openCommentRowIds.add(confession.rowId);
+        } else {
+            commentsSection.hidden = true;
+            openCommentRowIds.delete(confession.rowId);
+        }
     });
 
     box.appendChild(title);
@@ -147,6 +155,10 @@ async function loadApprovedConfessions() {
     try {
         const response = await fetch(SCRIPT_URL + "?t=" + Date.now());
         const data = await response.json();
+        const rawString = JSON.stringify(data);
+
+        if (rawString === lastRawDataString) return;
+        lastRawDataString = rawString;
 
         currentConfessions = data.map((item, index) => ({
             rowId: item.rowId,
@@ -198,6 +210,7 @@ async function addComment(rowId, text) {
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "comment", rowId: rowId, content: text })
         });
+        lastRawDataString = "";
         await loadApprovedConfessions();
     } catch (err) {
         console.error("Lỗi bình luận:", err);
