@@ -150,14 +150,21 @@ async function loadApprovedConfessions() {
         if (rawString === lastRawDataString) return;
         lastRawDataString = rawString;
 
-        currentConfessions = data.map((item, index) => ({
-            rowId: item.rowId,
-            number: index + 1,
-            content: item.content,
-            time: item.time,
-            likes: item.likes || 0,
-            comments: item.comments || []
-        }));
+        currentConfessions = data.map((item, index) => {
+            const numId = Number(item.rowId);
+            const existing = currentConfessions.find(c => Number(c.rowId) === numId);
+            const serverLikes = Number(item.likes) || 0;
+            const likes = existing ? Math.max(existing.likes, serverLikes) : serverLikes;
+
+            return {
+                rowId: item.rowId,
+                number: index + 1,
+                content: item.content,
+                time: item.time,
+                likes: likes,
+                comments: item.comments || []
+            };
+        });
 
         renderAll();
     } catch (err) {
@@ -174,21 +181,17 @@ async function toggleLike(rowId) {
 
     const confession = currentConfessions.find(c => Number(c.rowId) === numId);
     if (confession) {
-        confession.likes += 1;
+        confession.likes = (confession.likes || 0) + 1;
         renderAll();
     }
 
     try {
-        const response = await fetch(SCRIPT_URL, {
+        await fetch(SCRIPT_URL, {
             method: "POST",
+            mode: "no-cors",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "like", rowId: numId })
         });
-        const result = await response.json();
-        if (result && typeof result.likes === "number" && confession) {
-            confession.likes = result.likes;
-            renderAll();
-        }
     } catch (err) {
         console.error("Lỗi tim:", err);
     }
@@ -198,6 +201,7 @@ async function addComment(rowId, text) {
     try {
         await fetch(SCRIPT_URL, {
             method: "POST",
+            mode: "no-cors",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "comment", rowId: Number(rowId), content: text })
         });
@@ -239,6 +243,7 @@ if (form) {
         try {
             await fetch(SCRIPT_URL, {
                 method: "POST",
+                mode: "no-cors",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({ action: "confession", content: content })
             });
