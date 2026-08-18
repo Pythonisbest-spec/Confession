@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3OvFaDPX2TSf4Gorhd5jJNMMxIQwv-QRlbHZD3BrE7hYwNXvLFFLTB6x62Fy3_BeH5g/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby1AkoigfLZU1KN9na1h08soFV83eqPi4TFz5vQzs7PxcZ3yr_7YFPk_wqADPa4t1SFzg/exec";
 const LIKED_KEY = "nhs_liked_ids";
 const MAX_LENGTH = 500;
 
@@ -160,7 +160,6 @@ async function loadApprovedConfessions() {
         renderAll();
     } catch (err) {
         console.error("Lỗi tải confession:", err);
-        list.innerHTML = "<p>Không thể tải danh sách confession. Vui lòng thử lại sau.</p>";
     }
 }
 
@@ -177,11 +176,16 @@ async function toggleLike(rowId) {
     }
 
     try {
-        await fetch(SCRIPT_URL, {
+        const response = await fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "like", rowId: rowId })
         });
+        const result = await response.json();
+        if (result && typeof result.likes === "number" && confession) {
+            confession.likes = result.likes;
+            renderAll();
+        }
     } catch (err) {
         console.error("Lỗi tim:", err);
     }
@@ -194,7 +198,7 @@ async function addComment(rowId, text) {
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "comment", rowId: rowId, content: text })
         });
-        alert("Bình luận đã được gửi! Vui lòng chờ admin duyệt.");
+        await loadApprovedConfessions();
     } catch (err) {
         console.error("Lỗi bình luận:", err);
         alert("Không thể gửi bình luận, vui lòng thử lại!");
@@ -243,3 +247,4 @@ form.addEventListener("submit", async (event) => {
 });
 
 loadApprovedConfessions();
+setInterval(loadApprovedConfessions, 5000);
