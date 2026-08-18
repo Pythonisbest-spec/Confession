@@ -1,0 +1,228 @@
+body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background: linear-gradient(to right, floralwhite, darksalmon);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+#picture {
+    position: absolute;
+    top: 50px;
+    left: 20px;
+}
+
+#picture img {
+    width: 280px;
+    mix-blend-mode: multiply;
+}
+
+h1 {
+    position: relative;
+    top: 90px;
+    left: 560px;
+    margin: 0;
+}
+
+#send_confession {
+    position: relative;
+    top: 100px;
+    left: 580px;
+    color: blue;
+}
+
+#send_confession h3 {
+    margin: 0;
+}
+
+#confession_form {
+    position: relative;
+    top: 110px;
+    left: 560px;
+}
+
+#confession_input {
+    padding: 4px 6px;
+    font-family: inherit;
+}
+
+#confession_form button {
+    padding: 4px 12px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+#form_error {
+    position: relative;
+    top: 120px;
+    left: 562px;
+    color: darkred;
+    font-size: 0.85rem;
+    max-width: 320px;
+    margin: 0;
+}
+#form_error:empty {
+    display: none;
+}
+
+#confession_list {
+    position: relative;
+    top: 130px;
+    left: 560px;
+    width: 500px;
+    padding-bottom: 60px;
+}
+
+.box {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.confession_title {
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.confession_content p {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.confession_meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.confession_time {
+    font-size: 0.75rem;
+    color: #666;
+    font-family: Arial, sans-serif;
+}
+
+.confession_delete {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+}
+
+.confession_delete:hover {
+    color: darkred;
+    text-decoration: underline;
+}
+
+a {
+    position: fixed;
+    bottom: 15px;
+    left: 15px;
+    color: navy;
+}
+/* ---------- Thả tim & bình luận ---------- */
+
+.confession_actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 8px;
+}
+
+.heart_btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
+    color: #999;
+    transition: transform 0.15s ease;
+}
+
+.heart_btn:hover {
+    transform: scale(1.15);
+}
+
+.heart_btn.liked {
+    color: #e0334f;
+}
+
+.heart_count {
+    font-size: 0.8rem;
+    font-family: Arial, sans-serif;
+    color: #666;
+}
+
+.comment_toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #666;
+    font-family: Arial, sans-serif;
+}
+
+.comment_toggle:hover {
+    text-decoration: underline;
+}
+
+.comments_section {
+    margin-top: 10px;
+    border-top: 1px dashed #ddd;
+    padding-top: 8px;
+}
+
+.comments_section[hidden] {
+    display: none;
+}
+
+.comment_list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.comment_item {
+    background: #f7f4f0;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-family: Arial, sans-serif;
+}
+
+.comment_form {
+    display: flex;
+    gap: 6px;
+}
+
+.comment_input {
+    flex: 1;
+    padding: 4px 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.comment_submit {
+    padding: 4px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: white;
+    border-radius: 4px;
+}
+
+.comment_submit:hover {
+    background: #f0f0f0;
+}
