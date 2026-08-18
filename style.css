@@ -5,7 +5,7 @@
 body {
     margin: 0;
     font-family: Georgia, "Times New Roman", serif;
-    background: linear-gradient(to right, floralwhite, darksalmon);
+    background: linear-gradient(to bottom, floralwhite, darksalmon);
     background-repeat: no-repeat;
     background-attachment: fixed;
     min-height: 100vh;

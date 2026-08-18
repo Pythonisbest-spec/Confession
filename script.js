@@ -1,4 +1,4 @@
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby40A3Y3AJq5d7CNI-9fGoJxzULYgak4yuPY1GEol_djAQdQkFT_JoQpHmyLViyp91UJw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3OvFaDPX2TSf4Gorhd5jJNMMxIQwv-QRlbHZD3BrE7hYwNXvLFFLTB6x62Fy3_BeH5g/exec";
 const LIKED_KEY = "nhs_liked_ids";
 const MAX_LENGTH = 500;
 
@@ -194,7 +194,7 @@ async function addComment(rowId, text) {
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "comment", rowId: rowId, content: text })
         });
-        await loadApprovedConfessions();
+        alert("Bình luận đã được gửi! Vui lòng chờ admin duyệt.");
     } catch (err) {
         console.error("Lỗi bình luận:", err);
         alert("Không thể gửi bình luận, vui lòng thử lại!");
@@ -231,7 +231,7 @@ form.addEventListener("submit", async (event) => {
         await fetch(SCRIPT_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ content: content })
+            body: JSON.stringify({ action: "confession", content: content })
         });
         alert("Đã gửi confession thành công! Vui lòng chờ admin duyệt.");
         input.value = "";
@@ -243,4 +243,3 @@ form.addEventListener("submit", async (event) => {
 });
 
 loadApprovedConfessions();
-setInterval(loadApprovedConfessions, 10000);
