@@ -35,7 +35,7 @@ function formatTime(timestamp) {
 function renderComment(comment) {
     const item = document.createElement("div");
     item.className = "comment_item";
-    item.textContent = comment.content;
+    item.textContent = typeof comment === "object" ? comment.content : comment;
     return item;
 }
 
@@ -107,11 +107,12 @@ function renderBox(confession) {
     commentForm.appendChild(commentInput);
     commentForm.appendChild(commentSubmit);
 
-    commentForm.addEventListener("submit", (event) => {
+    commentForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const text = commentInput.value.trim();
         if (text === "") return;
-        addComment(confession.rowId, text);
+        commentInput.value = "";
+        await addComment(confession.rowId, text);
     });
 
     commentsSection.appendChild(commentList);
@@ -144,7 +145,7 @@ function renderAll() {
 
 async function loadApprovedConfessions() {
     try {
-        const response = await fetch(SCRIPT_URL);
+        const response = await fetch(SCRIPT_URL + "?t=" + Date.now());
         const data = await response.json();
 
         currentConfessions = data.map((item, index) => ({
@@ -178,6 +179,7 @@ async function toggleLike(rowId) {
     try {
         await fetch(SCRIPT_URL, {
             method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "like", rowId: rowId })
         });
     } catch (err) {
@@ -189,9 +191,10 @@ async function addComment(rowId, text) {
     try {
         await fetch(SCRIPT_URL, {
             method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "comment", rowId: rowId, content: text })
         });
-        loadApprovedConfessions();
+        await loadApprovedConfessions();
     } catch (err) {
         console.error("Lỗi bình luận:", err);
         alert("Không thể gửi bình luận, vui lòng thử lại!");
@@ -227,6 +230,7 @@ form.addEventListener("submit", async (event) => {
     try {
         await fetch(SCRIPT_URL, {
             method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ content: content })
         });
         alert("Đã gửi confession thành công! Vui lòng chờ admin duyệt.");
@@ -239,3 +243,4 @@ form.addEventListener("submit", async (event) => {
 });
 
 loadApprovedConfessions();
+setInterval(loadApprovedConfessions, 10000);
