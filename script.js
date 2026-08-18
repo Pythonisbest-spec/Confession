@@ -1,4 +1,5 @@
-const STORAGE_KEY = "nhs_confessions";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby40A3Y3AJq5d7CNI-9fGoJxzULYgak4yuPY1GEol_djAQdQkFT_JoQpHmyLViyp91UJw/exec";
+const COMMENTS_KEY = "nhs_comments_map";
 const LIKED_KEY = "nhs_liked_ids";
 const MAX_LENGTH = 500;
 
@@ -7,44 +8,38 @@ const input = document.querySelector("#confession_input");
 const errorBox = document.querySelector("#form_error");
 const list = document.querySelector("#confession_list");
 
-// ---------- Load / Save ----------
+let likedIds = loadLikedIds();
+let commentsMap = loadCommentsMap();
+let currentConfessions = [];
 
-function loadConfessions() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try {
-        return JSON.parse(raw);
-    } catch (e) {
-        console.error("Dữ liệu confession bị lỗi, đang reset:", e);
-        return [];
-    }
-}
-
-function saveConfessions(confessions) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(confessions));
-}
+// ---------- LocalStorage Helpers ----------
 
 function loadLikedIds() {
     const raw = localStorage.getItem(LIKED_KEY);
     if (!raw) return [];
-    try {
-        return JSON.parse(raw);
-    } catch (e) {
-        return [];
-    }
+    try { return JSON.parse(raw); } catch (e) { return []; }
 }
 
 function saveLikedIds(likedIds) {
     localStorage.setItem(LIKED_KEY, JSON.stringify(likedIds));
 }
 
-let confessions = loadConfessions();
-let likedIds = loadLikedIds();
+function loadCommentsMap() {
+    const raw = localStorage.getItem(COMMENTS_KEY);
+    if (!raw) return {};
+    try { return JSON.parse(raw); } catch (e) { return {}; }
+}
+
+function saveCommentsMap(map) {
+    localStorage.setItem(COMMENTS_KEY, JSON.stringify(map));
+}
 
 // ---------- Render ----------
 
 function formatTime(timestamp) {
+    if (!timestamp) return "";
     const date = new Date(timestamp);
+    if (isNaN(date.getTime())) return timestamp;
     return date.toLocaleString("vi-VN", {
         day: "2-digit",
         month: "2-digit",
@@ -56,12 +51,11 @@ function formatTime(timestamp) {
 function renderComment(comment) {
     const item = document.createElement("div");
     item.className = "comment_item";
-    item.textContent = comment.content; // textContent -> an toàn XSS
+    item.textContent = comment.content;
     return item;
 }
 
 function renderBox(confession) {
-    // Đảm bảo dữ liệu cũ (chưa có likes/comments) vẫn chạy được
     if (typeof confession.likes !== "number") confession.likes = 0;
     if (!Array.isArray(confession.comments)) confession.comments = [];
 
@@ -86,14 +80,7 @@ function renderBox(confession) {
     time.className = "confession_time";
     time.textContent = formatTime(confession.createdAt);
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.type = "button";
-    deleteBtn.className = "confession_delete";
-    deleteBtn.textContent = "Xoá";
-    deleteBtn.addEventListener("click", () => deleteConfession(confession.id));
-
     meta.appendChild(time);
-    meta.appendChild(deleteBtn);
 
     // ----- Thả tim & nút bình luận -----
     const actions = document.createElement("div");
@@ -115,7 +102,7 @@ function renderBox(confession) {
     actions.appendChild(heartBtn);
     actions.appendChild(commentToggle);
 
-    // ----- Khu vực bình luận (ẩn mặc định) -----
+    // ----- Khu vực bình luận -----
     const commentsSection = document.createElement("div");
     commentsSection.className = "comments_section";
     commentsSection.hidden = true;
@@ -167,40 +154,49 @@ function renderBox(confession) {
 
 function renderAll() {
     list.innerHTML = "";
-    [...confessions].reverse().forEach((c) => {
+
+    if (currentConfessions.length === 0) {
+        list.innerHTML = "<p>Chưa có confession nào được duyệt.</p>";
+        return;
+    }
+
+    [...currentConfessions].reverse().forEach((c) => {
         list.appendChild(renderBox(c));
     });
 }
 
 // ---------- Actions ----------
 
-function addConfession(content) {
-    const nextNumber = confessions.length > 0
-        ? confessions[confessions.length - 1].number + 1
-        : 1;
+async function loadApprovedConfessions() {
+    list.innerHTML = "<p>Đang tải danh sách confession...</p>";
+    try {
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
 
-    const newConfession = {
-        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
-        number: nextNumber,
-        content,
-        createdAt: Date.now(),
-        likes: 0,
-        comments: [],
-    };
+        currentConfessions = data.map((item, index) => {
+            const id = "cfs_" + (item.time ? new Date(item.time).getTime() : index) + "_" + index;
+            const comments = commentsMap[id] || [];
+            const isLiked = likedIds.includes(id);
 
-    confessions.push(newConfession);
-    saveConfessions(confessions);
-    renderAll();
-}
+            return {
+                id: id,
+                number: index + 1,
+                content: item.content,
+                createdAt: item.time,
+                likes: isLiked ? 1 : 0,
+                comments: comments
+            };
+        });
 
-function deleteConfession(id) {
-    confessions = confessions.filter((c) => c.id !== id);
-    saveConfessions(confessions);
-    renderAll();
+        renderAll();
+    } catch (err) {
+        console.error("Lỗi tải confession:", err);
+        list.innerHTML = "<p>Không thể tải danh sách confession. Vui lòng thử lại sau.</p>";
+    }
 }
 
 function toggleLike(id) {
-    const confession = confessions.find((c) => c.id === id);
+    const confession = currentConfessions.find((c) => c.id === id);
     if (!confession) return;
 
     const alreadyLiked = likedIds.includes(id);
@@ -213,40 +209,42 @@ function toggleLike(id) {
         likedIds.push(id);
     }
 
-    saveConfessions(confessions);
     saveLikedIds(likedIds);
     renderAll();
 }
 
 function addComment(confessionId, text) {
-    const confession = confessions.find((c) => c.id === confessionId);
+    const confession = currentConfessions.find((c) => c.id === confessionId);
     if (!confession) return;
 
-    confession.comments.push({
+    const newComment = {
         id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
         content: text,
         createdAt: Date.now(),
-    });
+    };
 
-    saveConfessions(confessions);
+    confession.comments.push(newComment);
+    commentsMap[confessionId] = confession.comments;
+    saveCommentsMap(commentsMap);
+
     renderAll();
 }
 
-// ---------- Validation ----------
+// ---------- Validation & Form ----------
 
 function showError(message) {
-    errorBox.textContent = message;
+    if (errorBox) errorBox.textContent = message;
 }
 
 function clearError() {
-    errorBox.textContent = "";
+    if (errorBox) errorBox.textContent = "";
 }
 
-// ---------- Events ----------
+if (input) {
+    input.addEventListener("input", clearError);
+}
 
-input.addEventListener("input", clearError);
-
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const content = input.value.trim();
@@ -261,13 +259,20 @@ form.addEventListener("submit", (event) => {
         return;
     }
 
-    addConfession(content);
-
-    input.value = "";
-    clearError();
-    input.focus();
+    try {
+        await fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({ content: content })
+        });
+        alert("Đã gửi confession thành công! Vui lòng chờ admin duyệt.");
+        input.value = "";
+        clearError();
+    } catch (err) {
+        console.error("Lỗi gửi confession:", err);
+        alert("Có lỗi xảy ra, vui lòng thử lại!");
+    }
 });
 
 // ---------- Init ----------
 
-renderAll();
+loadApprovedConfessions();
