@@ -1,6 +1,8 @@
 
-<!-- 19/08/2026 -->
-
+<!-- 
+  4:13
+  20/08/2026
+-->
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -25,7 +27,6 @@
     <div class="app_container">
         <!-- Banner & Header Section -->
         <header class="hero_section" style="position: relative;">
-            <!-- Nút chuyển đổi Dark/Light Mode nổi bật hơn, có kèm chữ -->
             <button id="theme_toggle_btn" title="Chuyển đổi giao diện">
                 <i class="fa-solid fa-moon"></i>
                 <span class="theme_text">Chế độ tối</span>
@@ -54,7 +55,53 @@
 
             <form id="confession_form" autocomplete="off">
                 <div class="input_group">
-                    <input id="confession_input" placeholder="Viết tâm sự ẩn danh của bạn tại đây...">
+                    <div class="textarea_wrapper">
+                        <textarea id="confession_input" rows="2" placeholder="Viết tâm sự ẩn danh của bạn tại đây... (Nhấn Enter để xuống dòng)"></textarea>
+                        
+                        <!-- Nút emoji nằm gọn bên trong khung nhập -->
+                        <button type="button" class="emoji_toggle_btn inside_input" title="Chọn emoji">
+                            <i class="fa-regular fa-face-smile"></i>
+                        </button>
+
+                        <!-- Bảng chọn Emoji chính (hiển thị dạng popup nổi) -->
+                        <div class="emoji_picker_container main_emoji_popup" style="display: none;">
+                            <div class="emoji_picker">
+                                <span class="emoji_item" data-emoji="😊">😊</span>
+                                <span class="emoji_item" data-emoji="😂">😂</span>
+                                <span class="emoji_item" data-emoji="🥺">🥺</span>
+                                <span class="emoji_item" data-emoji="😍">😍</span>
+                                <span class="emoji_item" data-emoji="🥰">🥰</span>
+                                <span class="emoji_item" data-emoji="😎">😎</span>
+                                <span class="emoji_item" data-emoji="🤔">🤔</span>
+                                <span class="emoji_item" data-emoji="😅">😅</span>
+                                <span class="emoji_item" data-emoji="😆">😆</span>
+                                <span class="emoji_item" data-emoji="😉">😉</span>
+                                <span class="emoji_item" data-emoji="😘">😘</span>
+                                <span class="emoji_item" data-emoji="😜">😜</span>
+                                <span class="emoji_item" data-emoji="🤫">🤫</span>
+                                <span class="emoji_item" data-emoji="🤩">🤩</span>
+                                <span class="emoji_item" data-emoji="😏">😏</span>
+                                <span class="emoji_item" data-emoji="😴">😴</span>
+                                <span class="emoji_item" data-emoji="🥳">🥳</span>
+                                <span class="emoji_item" data-emoji="😢">😢</span>
+                                <span class="emoji_item" data-emoji="😭">😭</span>
+                                <span class="emoji_item" data-emoji="😡">😡</span>
+                                <span class="emoji_item" data-emoji="👍">👍</span>
+                                <span class="emoji_item" data-emoji="👎">👎</span>
+                                <span class="emoji_item" data-emoji="👏">👏</span>
+                                <span class="emoji_item" data-emoji="🙏">🙏</span>
+                                <span class="emoji_item" data-emoji="🔥">🔥</span>
+                                <span class="emoji_item" data-emoji="❤️">❤️</span>
+                                <span class="emoji_item" data-emoji="💖">💖</span>
+                                <span class="emoji_item" data-emoji="✨">✨</span>
+                                <span class="emoji_item" data-emoji="🎉">🎉</span>
+                                <span class="emoji_item" data-emoji="💯">💯</span>
+                                <span class="emoji_item" data-emoji="☕">☕</span>
+                                <span class="emoji_item" data-emoji="📌">📌</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <button type="submit">
                         <span>Gửi</span>
                         <i class="fa-solid fa-arrow-up-from-bracket"></i>
@@ -79,6 +126,9 @@
         <!-- Danh sách Confessions -->
         <main id="confession_list"></main>
     </div>
+
+    <!-- Lớp phủ làm mờ nền -->
+    <div id="confession_backdrop"></div>
 
     <script src="script.js"></script>
 </body>
