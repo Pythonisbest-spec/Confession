@@ -1,17 +1,15 @@
 
-
-/* 
-  19/08/2026 
+/* 4:12 
+   20/08/2026
 */
-
 
 :root {
     --primary-color: #f43f5e;
     --primary-hover: #e11d48;
     --accent-color: #6366f1;
-    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); /* Làm nền dịu mắt, bớt gắt */
-    --card-bg: #ffffff; /* Khung lớn hoàn toàn đặc, tách biệt tuyệt đối khỏi background */
-    --card-border: #cbd5e1; /* Viền xám đậm rõ nét */
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    --card-bg: #ffffff;
+    --card-border: #cbd5e1;
     --text-main: #0f172a;
     --text-muted: #475569;
     --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.05);
@@ -21,14 +19,13 @@
     --radius-sm: 8px;
 }
 
-/* Cấu hình màu sắc cho Dark Mode dịu mắt, chống mỏi */
 [data-theme="dark"] {
     --primary-color: #fb7185;
     --primary-hover: #f43f5e;
     --accent-color: #818cf8;
-    --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #111827 100%); /* Nền tối sâu nhưng dịu */
-    --card-bg: #1e293b; /* Khung đặc màu tối, không bị lẫn vào nền */
-    --card-border: #475569; /* Viền sáng hơn để dễ phân định khung */
+    --bg-gradient: linear-gradient(135deg, #0b0f19 0%, #111827 100%);
+    --card-bg: #1e293b;
+    --card-border: #475569;
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.3);
@@ -60,23 +57,19 @@
 
 [data-theme="dark"] #search_input:focus, 
 [data-theme="dark"] #search_date_input:focus,
-[data-theme="dark"] #confession_input:focus {
+[data-theme="dark"] #confession_input:focus,
+[data-theme="dark"] .comment_input:focus {
     background: #0f172a;
     border-color: var(--accent-color);
 }
 
 [data-theme="dark"] .box {
-    background: #111827; /* Thẻ confession con có màu nền tách biệt hẳn với khung chứa ngày */
+    background: #111827;
     border-color: #334155;
 }
 
 [data-theme="dark"] .box:hover {
     border-color: #64748b;
-}
-
-[data-theme="dark"] .box.expanded {
-    background: #1f141a;
-    border-color: #f43f5e;
 }
 
 [data-theme="dark"] .confession_title {
@@ -147,7 +140,6 @@ body {
     gap: 22px;
 }
 
-/* Nút chuyển mode nổi bật */
 #theme_toggle_btn {
     position: absolute; 
     top: 20px; 
@@ -173,10 +165,9 @@ body {
     box-shadow: 0 6px 16px rgba(244, 63, 94, 0.4);
 }
 
-/* Header & Hero Card */
 .hero_section {
     background: var(--card-bg);
-    border: 2px solid var(--card-border); /* Viền dày và rõ nét hoàn toàn */
+    border: 2px solid var(--card-border);
     border-radius: var(--radius-lg);
     padding: 28px 24px;
     box-shadow: var(--shadow-md);
@@ -244,7 +235,6 @@ h4 {
     text-decoration: underline;
 }
 
-/* Card Wrapper (Form) */
 .card_wrapper {
     background: var(--card-bg);
     border: 2px solid var(--card-border);
@@ -266,17 +256,29 @@ h4 {
 #confession_form .input_group {
     display: flex;
     gap: 10px;
+    align-items: stretch;
+}
+
+.textarea_wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
 }
 
 #confession_input {
-    flex: 1;
-    padding: 12px 16px;
+    width: 100%;
+    padding: 12px 45px 12px 16px;
     font-family: inherit;
     font-size: 0.95rem;
     border: 2px solid #cbd5e1;
     border-radius: var(--radius-md);
     background: #ffffff;
     outline: none;
+    resize: none;
+    min-height: 52px;
+    max-height: 120px;
+    overflow-y: auto;
     transition: all 0.2s ease;
 }
 
@@ -285,8 +287,8 @@ h4 {
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
 }
 
-#confession_form button {
-    padding: 12px 22px;
+#confession_form button[type="submit"] {
+    padding: 0 22px;
     font-family: inherit;
     font-size: 0.95rem;
     font-weight: 600;
@@ -297,14 +299,117 @@ h4 {
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
     transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
-#confession_form button:hover {
+#confession_form button[type="submit"]:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.emoji_toggle_btn.inside_input {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+    height: auto;
+}
+
+.emoji_toggle_btn.inside_input:hover {
+    background: transparent;
+    border-color: transparent;
+    color: var(--accent-color);
+    transform: translateY(-50%) scale(1.1);
+}
+
+[data-theme="dark"] .emoji_toggle_btn.inside_input {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .emoji_toggle_btn.inside_input:hover {
+    color: var(--accent-color);
+}
+
+.emoji_picker_container.main_emoji_popup {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 8px);
+    width: 100%;
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-radius: var(--radius-md);
+    padding: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 transparent;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+}
+
+.emoji_picker_container::-webkit-scrollbar {
+    width: 5px;
+}
+
+.emoji_picker_container::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+}
+
+.emoji_picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.emoji_item {
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 4px 6px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-sm);
+    transition: transform 0.15s ease, background 0.15s ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Be Vietnam Pro', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.emoji_item:hover {
+    transform: scale(1.15);
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+[data-theme="dark"] .emoji_picker_container {
+    background: #0f172a;
+    border-color: #475569;
+}
+
+[data-theme="dark"] .emoji_item {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .emoji_item:hover {
+    background: #334155;
+    border-color: #64748b;
 }
 
 #form_error {
@@ -318,7 +423,6 @@ h4 {
     display: none;
 }
 
-/* Thanh tìm kiếm */
 #search_container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -357,7 +461,6 @@ h4 {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
 }
 
-/* Confession List & Grouping */
 #confession_list {
     display: flex;
     flex-direction: column;
@@ -388,22 +491,22 @@ h4 {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
-    align-items: start;
+    align-items: stretch;
 }
 
-/* Thẻ confession con - Thiết kế tách biệt mạnh với khung chứa bên ngoài */
 .box {
-    background: #f8fafc; /* Màu nền nhẹ nhàng nhưng tách biệt với nền trắng/tối chính */
-    border: 2px solid #cbd5e1; /* Viền cứng cáp, cực kỳ sắc nét */
+    background: #f8fafc;
+    border: 2px solid #cbd5e1;
     border-radius: var(--radius-md);
     padding: 16px;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
     cursor: pointer;
     position: relative;
+    height: 240px; 
     overflow: hidden;
 }
 
@@ -413,13 +516,43 @@ h4 {
     box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
 }
 
-.box.expanded {
-    grid-column: 1 / -1;
-    order: -1;
-    border-color: #f43f5e;
-    border-width: 2.5px;
-    box-shadow: 0 10px 24px rgba(244, 63, 94, 0.15);
-    background: #ffffff;
+.close_modal_btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: #e2e8f0;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.close_modal_btn:hover {
+    background: #f43f5e;
+    color: #ffffff;
+    transform: scale(1.1);
+}
+
+.box.modal_focused .close_modal_btn {
+    display: flex;
+}
+
+[data-theme="dark"] .close_modal_btn {
+    background: #334155;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .close_modal_btn:hover {
+    background: #f43f5e;
+    color: #ffffff;
 }
 
 .confession_title {
@@ -430,7 +563,7 @@ h4 {
     background: #e2e8f0;
     padding: 3px 10px;
     border-radius: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     width: fit-content;
     border: 1px solid #cbd5e1;
 }
@@ -441,17 +574,36 @@ h4 {
     border-color: #fecdd3;
 }
 
+.confession_content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    overflow: hidden;
+}
+
 .confession_content p {
     font-size: 0.94rem;
     color: var(--text-main);
     white-space: pre-wrap;
     word-break: break-word;
-    line-height: 1.6;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.box.expanded .confession_content p {
+    display: block;
+    -webkit-line-clamp: unset;
+    overflow: visible;
 }
 
 .confession_meta {
-    margin-top: 12px;
-    padding-top: 8px;
+    margin-top: 8px;
+    padding-top: 6px;
     border-top: 1.5px dashed #cbd5e1;
 }
 
@@ -461,12 +613,11 @@ h4 {
     font-weight: 500;
 }
 
-/* Actions: Heart & Comments */
 .confession_actions {
     display: flex;
     align-items: center;
     gap: 16px;
-    margin-top: 10px;
+    margin-top: 8px;
 }
 
 .heart_btn {
@@ -514,17 +665,10 @@ h4 {
     color: var(--accent-color);
 }
 
-/* Comments Section */
 .comments_section {
     margin-top: 12px;
     padding-top: 12px;
     border-top: 2px solid #e2e8f0;
-    animation: fadeIn 0.25s ease-out;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-6px); }
-    to { opacity: 1; transform: translateY(0); }
 }
 
 .comment_list {
@@ -536,7 +680,6 @@ h4 {
     overflow-y: auto;
     padding-right: 6px;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
     scrollbar-width: thin;
     scrollbar-color: #94a3b8 transparent;
 }
@@ -562,11 +705,19 @@ h4 {
     font-size: 0.85rem;
     color: var(--text-main);
     word-break: break-word;
+    font-family: 'Be Vietnam Pro', sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.comment_form_wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .comment_form {
     display: flex;
     gap: 8px;
+    align-items: center;
 }
 
 .comment_input {
@@ -574,19 +725,73 @@ h4 {
     padding: 8px 12px;
     font-family: inherit;
     font-size: 0.85rem;
+    line-height: 1.4;
     border: 1.5px solid #cbd5e1;
     border-radius: var(--radius-sm);
     outline: none;
     background: #ffffff;
+    resize: none;
+    height: 40px;
+    max-height: 40px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 transparent;
     transition: border-color 0.2s;
+}
+
+.comment_input::-webkit-scrollbar {
+    width: 4px;
+}
+
+.comment_input::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.comment_input::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
 }
 
 .comment_input:focus {
     border-color: var(--accent-color);
 }
 
+.comment_emoji_btn {
+    height: 40px;
+    padding: 0 10px;
+    font-size: 1rem;
+    background: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.comment_emoji_btn:hover {
+    background: #e2e8f0;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+[data-theme="dark"] .comment_emoji_btn {
+    background: #0f172a;
+    border-color: #475569;
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .comment_emoji_btn:hover {
+    background: #1e293b;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
 .comment_submit {
-    padding: 8px 14px;
+    padding: 0 14px;
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;
@@ -595,13 +800,35 @@ h4 {
     color: #ffffff;
     border-radius: var(--radius-sm);
     transition: background 0.2s;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .comment_submit:hover {
     background: #4f46e5;
 }
 
-/* Responsive Styles */
+.read_more_btn {
+    background: transparent;
+    border: none;
+    color: var(--accent-color);
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    padding: 0;
+    align-self: flex-start;
+    margin-top: 2px;
+    transition: opacity 0.2s;
+}
+
+.read_more_btn:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+}
+
 @media (max-width: 960px) {
     .date_block_grid {
         grid-template-columns: repeat(2, 1fr);
@@ -627,14 +854,110 @@ h4 {
 
     #confession_form .input_group {
         flex-direction: column;
+        align-items: stretch;
     }
 
-    #confession_form button {
+    #confession_form button[type="submit"] {
         justify-content: center;
         padding: 11px;
+        height: auto;
     }
 
     .date_block_grid {
         grid-template-columns: 1fr;
     }
+    
+    .box {
+        height: 250px;
+    }
+}
+
+body.confession-modal-open {
+    overflow: hidden; 
+}
+
+#confession_backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#confession_backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.box.modal_focused {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 600px !important;     
+    height: 600px !important;    
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+    z-index: 999 !important;
+    overflow-y: hidden !important; 
+    border-color: #f43f5e;
+    border-width: 2px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    background: #ffffff;
+    display: flex !important;
+    flex-direction: column !important;
+    animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.box.modal_focused .confession_content {
+    flex: 1 !important;
+    max-height: none !important;
+    overflow-y: auto !important;
+    padding-right: 6px;
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 transparent;
+}
+
+.box.modal_focused .confession_content p {
+    font-size: 1.1rem !important; 
+    line-height: 1.7 !important;
+}
+
+.box.modal_focused .confession_content::-webkit-scrollbar {
+    width: 5px;
+}
+
+.box.modal_focused .confession_content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.box.modal_focused .confession_content::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+}
+
+@keyframes modalPopIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -46%) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+[data-theme="dark"] .box.modal_focused {
+    background: #1e293b;
+    border-color: #f43f5e;
+}
+
+.box.modal_focused .comment_list {
+    max-height: 150px;
 }
