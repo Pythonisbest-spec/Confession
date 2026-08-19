@@ -1,13 +1,11 @@
 
-
-/*
-  19/08/2026
+/* 4:08  
+   20/08/2026
 */
-
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQW25_w_EmNgBsBR2Ud7_dj2Ev6hwjp-G3qLqLwWARGHuCFRin9MOrIeLkRkSuIc8aYg/exec";
 const LIKED_KEY = "nhs_liked_ids_v2";
-const MAX_LENGTH = 500;
+const MAX_LENGTH = 20000;
 
 const form = document.querySelector("#confession_form");
 const input = document.querySelector("#confession_input");
@@ -15,6 +13,7 @@ const errorBox = document.querySelector("#form_error");
 const list = document.querySelector("#confession_list");
 const searchInput = document.querySelector("#search_input");
 const searchDateInput = document.querySelector("#search_date_input");
+const backdrop = document.querySelector("#confession_backdrop");
 
 let likedIds = loadLikedIds();
 let currentConfessions = [];
@@ -25,7 +24,7 @@ let searchDateQuery = "";
 
 // --- Xử lý Dark/Light Mode ---
 const themeToggleBtn = document.querySelector("#theme_toggle_btn");
-const themeText = themeToggleBtn.querySelector(".theme_text");
+const themeText = themeToggleBtn ? themeToggleBtn.querySelector(".theme_text") : null;
 const userTheme = localStorage.getItem("nhs_theme");
 
 if (userTheme === "dark") {
@@ -121,6 +120,43 @@ function renderComment(comment) {
     return item;
 }
 
+const sharedEmojiListHTML = `
+    <div class="emoji_picker">
+        <span class="emoji_item" data-emoji="😊">😊</span>
+        <span class="emoji_item" data-emoji="😂">😂</span>
+        <span class="emoji_item" data-emoji="🥺">🥺</span>
+        <span class="emoji_item" data-emoji="😍">😍</span>
+        <span class="emoji_item" data-emoji="🥰">🥰</span>
+        <span class="emoji_item" data-emoji="😎">😎</span>
+        <span class="emoji_item" data-emoji="🤔">🤔</span>
+        <span class="emoji_item" data-emoji="😅">😅</span>
+        <span class="emoji_item" data-emoji="😆">😆</span>
+        <span class="emoji_item" data-emoji="😉">😉</span>
+        <span class="emoji_item" data-emoji="😘">😘</span>
+        <span class="emoji_item" data-emoji="😜">😜</span>
+        <span class="emoji_item" data-emoji="🤫">🤫</span>
+        <span class="emoji_item" data-emoji="🤩">🤩</span>
+        <span class="emoji_item" data-emoji="😏">😏</span>
+        <span class="emoji_item" data-emoji="😴">😴</span>
+        <span class="emoji_item" data-emoji="🥳">🥳</span>
+        <span class="emoji_item" data-emoji="😢">😢</span>
+        <span class="emoji_item" data-emoji="😭">😭</span>
+        <span class="emoji_item" data-emoji="😡">😡</span>
+        <span class="emoji_item" data-emoji="👍">👍</span>
+        <span class="emoji_item" data-emoji="👎">👎</span>
+        <span class="emoji_item" data-emoji="👏">👏</span>
+        <span class="emoji_item" data-emoji="🙏">🙏</span>
+        <span class="emoji_item" data-emoji="🔥">🔥</span>
+        <span class="emoji_item" data-emoji="❤️">❤️</span>
+        <span class="emoji_item" data-emoji="💖">💖</span>
+        <span class="emoji_item" data-emoji="✨">✨</span>
+        <span class="emoji_item" data-emoji="🎉">🎉</span>
+        <span class="emoji_item" data-emoji="💯">💯</span>
+        <span class="emoji_item" data-emoji="☕">☕</span>
+        <span class="emoji_item" data-emoji="📌">📌</span>
+    </div>
+`;
+
 function updateOrRenderBox(confession) {
     const strId = String(confession.rowId);
     let box = list.querySelector(`.box[data-id="${confession.rowId}"]`);
@@ -132,19 +168,29 @@ function updateOrRenderBox(confession) {
         box.dataset.id = confession.rowId;
 
         box.innerHTML = `
+            <button type="button" class="close_modal_btn" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
             <div class="confession_title">Confession #${String(confession.number).padStart(3, "0")}</div>
-            <div class="confession_content"><p></p></div>
+            <div class="confession_content">
+                <p></p>
+                <button type="button" class="read_more_btn">Xem thêm</button>
+            </div>
             <div class="confession_meta"><span class="confession_time"></span></div>
             <div class="confession_actions">
                 <button type="button" class="heart_btn"></button>
                 <button type="button" class="comment_toggle"></button>
             </div>
-            <div class="comments_section">
+            <div class="comments_section" hidden>
                 <div class="comment_list"></div>
-                <form class="comment_form">
-                    <input type="text" class="comment_input" placeholder="Viết bình luận..." maxlength="200" />
-                    <button type="submit" class="comment_submit">Gửi</button>
-                </form>
+                <div class="comment_form_wrapper">
+                    <form class="comment_form">
+                        <textarea class="comment_input" rows="1" placeholder="Viết bình luận... (Enter để xuống dòng)" maxlength="20000"></textarea>
+                        <button type="button" class="comment_emoji_btn" title="Chọn emoji"><i class="fa-regular fa-face-smile"></i></button>
+                        <button type="submit" class="comment_submit">Gửi</button>
+                    </form>
+                    <div class="emoji_picker_container comment_emoji_container" style="display: none;">
+                        ${sharedEmojiListHTML}
+                    </div>
+                </div>
             </div>
         `;
 
@@ -152,6 +198,12 @@ function updateOrRenderBox(confession) {
         heartBtn.addEventListener("click", (e) => {
             e.stopPropagation();
             toggleLike(confession.rowId);
+        });
+
+        const readMoreBtn = box.querySelector(".read_more_btn");
+        readMoreBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleCommentsHandler();
         });
 
         const toggleCommentsHandler = () => {
@@ -164,19 +216,47 @@ function updateOrRenderBox(confession) {
                     if (prevBox) {
                         const prevSection = prevBox.querySelector(".comments_section");
                         if (prevSection) prevSection.hidden = true;
-                        prevBox.classList.remove("expanded");
+                        prevBox.classList.remove("expanded", "modal_focused");
+                        const prevBtn = prevBox.querySelector(".read_more_btn");
+                        if (prevBtn && prevBtn.style.display !== "none") prevBtn.textContent = "Xem thêm";
                     }
                 }
 
                 commentsSection.hidden = false;
-                box.classList.add("expanded");
+                box.classList.add("expanded", "modal_focused");
+                if (backdrop) backdrop.classList.add("active");
+                document.body.classList.add("confession-modal-open");
+                
                 activeOpenRowId = strId;
-            } else {
-                commentsSection.hidden = true;
-                box.classList.remove("expanded");
-                activeOpenRowId = null;
+                const rBtn = box.querySelector(".read_more_btn");
+                if (rBtn && rBtn.style.display !== "none") {
+                    rBtn.textContent = "Thu gọn";
+                }
             }
         };
+
+        function closeActiveModal() {
+            if (!activeOpenRowId) return;
+            const activeBox = list.querySelector(`.box[data-id="${activeOpenRowId}"]`);
+            if (activeBox) {
+                const commentsSection = activeBox.querySelector(".comments_section");
+                if (commentsSection) commentsSection.hidden = true;
+                activeBox.classList.remove("expanded", "modal_focused");
+                const rBtn = activeBox.querySelector(".read_more_btn");
+                if (rBtn && rBtn.style.display !== "none") {
+                    rBtn.textContent = "Xem thêm";
+                }
+            }
+            if (backdrop) backdrop.classList.remove("active");
+            document.body.classList.remove("confession-modal-open");
+            activeOpenRowId = null;
+        }
+
+        const closeBtn = box.querySelector(".close_modal_btn");
+        closeBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            closeActiveModal();
+        });
 
         box.addEventListener("click", toggleCommentsHandler);
 
@@ -185,18 +265,58 @@ function updateOrRenderBox(confession) {
             e.stopPropagation();
         });
 
-        const commentForm = box.querySelector(".comment_form");
         const commentInput = box.querySelector(".comment_input");
+        const commentEmojiBtn = box.querySelector(".comment_emoji_btn");
+        const commentEmojiContainer = box.querySelector(".comment_emoji_container");
+
+        commentEmojiBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isVisible = commentEmojiContainer.style.display === "block";
+            commentEmojiContainer.style.display = isVisible ? "none" : "block";
+        });
+
+        commentEmojiContainer.querySelectorAll(".emoji_item").forEach((item) => {
+            item.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const emoji = item.getAttribute("data-emoji");
+                const startPos = commentInput.selectionStart;
+                const endPos = commentInput.selectionEnd;
+                const text = commentInput.value;
+
+                commentInput.value = text.substring(0, startPos) + emoji + text.substring(endPos);
+                commentInput.selectionStart = commentInput.selectionEnd = startPos + emoji.length;
+                commentInput.focus();
+            });
+        });
+
+        const commentForm = box.querySelector(".comment_form");
+        const commentSubmitBtn = box.querySelector(".comment_submit");
+
         commentForm.addEventListener("submit", async (event) => {
             event.preventDefault();
             const text = commentInput.value.trim();
             if (!text) return;
-            commentInput.value = "";
-            await addComment(confession.rowId, text);
+            commentEmojiContainer.style.display = "none";
+            await addComment(confession.rowId, text, commentSubmitBtn, commentInput);
         });
     }
 
-    box.querySelector(".confession_content p").textContent = confession.content;
+    const isOpen = (activeOpenRowId === strId);
+    const pEl = box.querySelector(".confession_content p");
+    pEl.textContent = confession.content;
+
+    const readMoreBtn = box.querySelector(".read_more_btn");
+    
+    requestAnimationFrame(() => {
+        const isOverflowing = pEl.scrollHeight > pEl.clientHeight || confession.content.length > 120;
+        if (!isOverflowing && !isOpen) {
+            readMoreBtn.style.display = "none";
+        } else {
+            readMoreBtn.style.display = "inline-block";
+            readMoreBtn.textContent = isOpen ? "Thu gọn" : "Xem thêm";
+        }
+    });
+
     box.querySelector(".confession_time").textContent = formatTime(confession.time);
 
     const heartBtn = box.querySelector(".heart_btn");
@@ -207,12 +327,11 @@ function updateOrRenderBox(confession) {
     commentToggle.textContent = `💬 Bình luận (${confession.comments.length})`;
 
     const commentsSection = box.querySelector(".comments_section");
-    const isOpen = (activeOpenRowId === strId);
     commentsSection.hidden = !isOpen;
     if (isOpen) {
-        box.classList.add("expanded");
+        box.classList.add("expanded", "modal_focused");
     } else {
-        box.classList.remove("expanded");
+        box.classList.remove("expanded", "modal_focused");
     }
 
     const commentList = box.querySelector(".comment_list");
@@ -262,7 +381,6 @@ function renderAll() {
     }
 
     filteredConfessions.sort((a, b) => b.number - a.number);
-
     list.innerHTML = "";
 
     const groups = {};
@@ -280,7 +398,7 @@ function renderAll() {
 
         const dateHeader = document.createElement("div");
         dateHeader.className = "date_block_header";
-        dateHeader.innerHTML = `<span>📅 Ngày ${dateStr}</span>`;
+        dateHeader.innerHTML = `📅 Ngày ${dateStr}`;
         dateBlock.appendChild(dateHeader);
 
         const gridContainer = document.createElement("div");
@@ -352,7 +470,24 @@ async function toggleLike(rowId) {
     }
 }
 
-async function addComment(rowId, text) {
+async function addComment(rowId, text, submitBtn, commentInput) {
+    const strId = String(rowId);
+    const confession = currentConfessions.find(c => String(c.rowId) === strId);
+    
+    const tempComment = {
+        content: text,
+        time: new Date().toISOString()
+    };
+
+    if (confession) {
+        if (!confession.comments) confession.comments = [];
+        confession.comments.push(tempComment);
+        updateOrRenderBox(confession);
+    }
+
+    commentInput.value = "";
+    commentInput.style.height = "40px";
+
     try {
         await fetch(SCRIPT_URL, {
             method: "POST",
@@ -360,11 +495,16 @@ async function addComment(rowId, text) {
             headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify({ action: "comment", rowId: Number(rowId), content: text })
         });
-        lastRawDataString = "";
-        await loadApprovedConfessions();
+        
+        setTimeout(async () => {
+            lastRawDataString = "";
+            await loadApprovedConfessions();
+        }, 1000);
+
     } catch (err) {
         console.error("Lỗi bình luận:", err);
         alert("Không thể gửi bình luận, vui lòng thử lại!");
+        await loadApprovedConfessions();
     }
 }
 
@@ -377,12 +517,65 @@ function clearError() {
 }
 
 if (input) {
-    input.addEventListener("input", clearError);
+    input.addEventListener("input", () => {
+        clearError();
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    });
 }
+
+// --- Xử lý bật/tắt Emoji chính ---
+const mainEmojiToggleBtn = form ? form.querySelector(".emoji_toggle_btn") : null;
+const mainEmojiContainer = form ? form.querySelector(".emoji_picker_container") : null;
+
+if (mainEmojiToggleBtn && mainEmojiContainer) {
+    mainEmojiToggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const isVisible = mainEmojiContainer.style.display === "block";
+        mainEmojiContainer.style.display = isVisible ? "none" : "block";
+    });
+
+    mainEmojiContainer.querySelectorAll(".emoji_item").forEach((item) => {
+        item.addEventListener("click", () => {
+            const emoji = item.getAttribute("data-emoji");
+            if (!input) return;
+
+            const startPos = input.selectionStart;
+            const endPos = input.selectionEnd;
+            const text = input.value;
+
+            input.value = text.substring(0, startPos) + emoji + text.substring(endPos);
+            input.selectionStart = input.selectionEnd = startPos + emoji.length;
+            input.focus();
+            clearError();
+        });
+    });
+}
+
+document.addEventListener("click", (e) => {
+    if (mainEmojiContainer && !mainEmojiContainer.contains(e.target) && e.target !== mainEmojiToggleBtn) {
+        mainEmojiContainer.style.display = "none";
+    }
+
+    document.querySelectorAll(".comment_emoji_container").forEach((container) => {
+        const boxWrapper = container.closest(".comment_form_wrapper");
+        const toggleBtn = boxWrapper ? boxWrapper.querySelector(".comment_emoji_btn") : null;
+        if (!container.contains(e.target) && e.target !== toggleBtn) {
+            container.style.display = "none";
+        }
+    });
+});
+
+const submitConfessionBtn = form ? form.querySelector("button[type='submit']") : null;
 
 if (form) {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
+
+        if (submitConfessionBtn && submitConfessionBtn.dataset.loading === "true") {
+            return;
+        }
+
         const content = input.value.trim();
 
         if (content === "") {
@@ -395,6 +588,15 @@ if (form) {
             return;
         }
 
+        if (mainEmojiContainer) mainEmojiContainer.style.display = "none";
+
+        if (submitConfessionBtn) {
+            submitConfessionBtn.dataset.loading = "true";
+            submitConfessionBtn.disabled = true;
+            submitConfessionBtn.style.opacity = "0.7";
+            submitConfessionBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang gửi...</span>`;
+        }
+
         try {
             await fetch(SCRIPT_URL, {
                 method: "POST",
@@ -404,10 +606,18 @@ if (form) {
             });
             alert("Đã gửi confession thành công! Vui lòng chờ admin duyệt.");
             input.value = "";
+            input.style.height = "auto";
             clearError();
         } catch (err) {
             console.error("Lỗi gửi confession:", err);
             alert("Có lỗi xảy ra, vui lòng thử lại!");
+        } finally {
+            if (submitConfessionBtn) {
+                submitConfessionBtn.dataset.loading = "false";
+                submitConfessionBtn.disabled = false;
+                submitConfessionBtn.style.opacity = "1";
+                submitConfessionBtn.innerHTML = `<span>Gửi</span><i class="fa-solid fa-arrow-up-from-bracket"></i>`;
+            }
         }
     });
 }
