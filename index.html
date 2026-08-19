@@ -1,3 +1,7 @@
+
+<!-- 19/08/2026 -->
+
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -11,36 +15,70 @@
     <meta property="og:description" content="Kênh confession chính thức của NHS.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="NHS.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <div id = "chu_thich">
-        Mình tạo ra page này là để:
-        
-        <ins style = "color: red;">các bạn bày tỏ cảm xúc với nhau cũng như với trường</ins>
-        vì vậy mình sẽ duyệt có chọn lọc giữa tích cực và tiêu cực nha.
+    <div class="app_container">
+        <!-- Banner & Header Section -->
+        <header class="hero_section" style="position: relative;">
+            <!-- Nút chuyển đổi Dark/Light Mode nổi bật hơn, có kèm chữ -->
+            <button id="theme_toggle_btn" title="Chuyển đổi giao diện">
+                <i class="fa-solid fa-moon"></i>
+                <span class="theme_text">Chế độ tối</span>
+            </button>
 
+            <div id="picture">
+                <img src="NHS.jpg" alt="Logo THPT Nguyễn Hùng Sơn">
+            </div>
+
+            <div class="header_titles">
+                <h1>Confession NHS</h1>
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Đợi admin duyệt mới lên bài được nhe</h4>
+            </div>
+
+            <div id="chu_thich">
+                <i class="fa-solid fa-circle-info info_icon"></i>
+                <span>Mình tạo ra page này để các bạn <mark>bày tỏ cảm xúc với nhau cũng như với trường</mark>, vì vậy mình sẽ duyệt có chọn lọc giữa tích cực và tiêu cực nha.</span>
+            </div>
+        </header>
+
+        <!-- Form gửi Confession -->
+        <section class="card_wrapper">
+            <div id="send_confession">
+                <h3><i class="fa-solid fa-paper-plane"></i> Gửi confession ở đây</h3>
+            </div>
+
+            <form id="confession_form" autocomplete="off">
+                <div class="input_group">
+                    <input id="confession_input" placeholder="Viết tâm sự ẩn danh của bạn tại đây...">
+                    <button type="submit">
+                        <span>Gửi</span>
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                    </button>
+                </div>
+            </form>
+            <p id="form_error"></p>
+        </section>
+
+        <!-- Thanh tìm kiếm -->
+        <section id="search_container">
+            <div class="search_box">
+                <i class="fa-solid fa-hashtag search_icon"></i>
+                <input type="text" id="search_input" placeholder="Tìm theo Mã ID (VD: #001, #002...)" autocomplete="off">
+            </div>
+            <div class="search_box">
+                <i class="fa-regular fa-calendar-days search_icon"></i>
+                <input type="text" id="search_date_input" placeholder="Tìm theo Ngày (VD: #03/06/2026)" autocomplete="off">
+            </div>
+        </section>
+
+        <!-- Danh sách Confessions -->
+        <main id="confession_list"></main>
     </div>
-    <div id="picture">
-        <img src="NHS.jpg" alt="Logo trường THPT Nguyễn Hùng Sơn">
-    </div>
-    <h4>Đợi admin duyệt mới lên bài được nhe</h4>
-    <h1>Confession NHS</h1>
-
-    <div id="send_confession">
-        <h3>Gửi confession ở đây</h3>
-    </div>
-
-    <form id="confession_form" autocomplete="off">
-        <input id="confession_input" placeholder="Nhập confession của bạn...">
-        <button type="submit">Gửi</button>
-    </form>
-
-    <p id="form_error"></p>
-
-    <div id="confession_list"></div>
 
     <script src="script.js"></script>
 </body>
