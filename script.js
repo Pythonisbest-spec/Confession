@@ -1,6 +1,7 @@
 
-/* 4:08  
-   20/08/2026
+/*
+    19:09
+    20/08/2026
 */
 
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQW25_w_EmNgBsBR2Ud7_dj2Ev6hwjp-G3qLqLwWARGHuCFRin9MOrIeLkRkSuIc8aYg/exec";
@@ -50,6 +51,39 @@ if (themeToggleBtn) {
             localStorage.setItem("nhs_theme", "dark");
             icon.className = "fa-solid fa-sun";
             if (themeText) themeText.textContent = "Chế độ sáng";
+        }
+    });
+}
+
+// --- Xử lý Modal README ---
+const readmeToggleBtn = document.querySelector("#readme_toggle_btn");
+const readmeModal = document.querySelector("#readme_modal");
+const closeReadmeBtn = document.querySelector("#close_readme_btn");
+
+if (readmeToggleBtn && readmeModal) {
+    readmeToggleBtn.addEventListener("click", () => {
+        readmeModal.classList.add("active");
+        document.body.classList.add("confession-modal-open");
+    });
+}
+
+function closeReadme() {
+    if (readmeModal) {
+        readmeModal.classList.remove("active");
+        if (!activeOpenRowId) {
+            document.body.classList.remove("confession-modal-open");
+        }
+    }
+}
+
+if (closeReadmeBtn) {
+    closeReadmeBtn.addEventListener("click", closeReadme);
+}
+
+if (readmeModal) {
+    readmeModal.addEventListener("click", (e) => {
+        if (e.target === readmeModal) {
+            closeReadme();
         }
     });
 }
@@ -217,8 +251,6 @@ function updateOrRenderBox(confession) {
                         const prevSection = prevBox.querySelector(".comments_section");
                         if (prevSection) prevSection.hidden = true;
                         prevBox.classList.remove("expanded", "modal_focused");
-                        const prevBtn = prevBox.querySelector(".read_more_btn");
-                        if (prevBtn && prevBtn.style.display !== "none") prevBtn.textContent = "Xem thêm";
                     }
                 }
 
@@ -228,10 +260,6 @@ function updateOrRenderBox(confession) {
                 document.body.classList.add("confession-modal-open");
                 
                 activeOpenRowId = strId;
-                const rBtn = box.querySelector(".read_more_btn");
-                if (rBtn && rBtn.style.display !== "none") {
-                    rBtn.textContent = "Thu gọn";
-                }
             }
         };
 
@@ -242,10 +270,6 @@ function updateOrRenderBox(confession) {
                 const commentsSection = activeBox.querySelector(".comments_section");
                 if (commentsSection) commentsSection.hidden = true;
                 activeBox.classList.remove("expanded", "modal_focused");
-                const rBtn = activeBox.querySelector(".read_more_btn");
-                if (rBtn && rBtn.style.display !== "none") {
-                    rBtn.textContent = "Xem thêm";
-                }
             }
             if (backdrop) backdrop.classList.remove("active");
             document.body.classList.remove("confession-modal-open");
@@ -313,7 +337,7 @@ function updateOrRenderBox(confession) {
             readMoreBtn.style.display = "none";
         } else {
             readMoreBtn.style.display = "inline-block";
-            readMoreBtn.textContent = isOpen ? "Thu gọn" : "Xem thêm";
+            readMoreBtn.textContent = "Xem thêm";
         }
     });
 
@@ -486,7 +510,7 @@ async function addComment(rowId, text, submitBtn, commentInput) {
     }
 
     commentInput.value = "";
-    commentInput.style.height = "40px";
+    commentInput.style.height = "46px";
 
     try {
         await fetch(SCRIPT_URL, {

@@ -1,7 +1,7 @@
 
 <!-- 
-  4:13
-  20/08/2026
+    19:10
+    20/08/2026
 -->
 
 <!DOCTYPE html>
@@ -26,7 +26,14 @@
 <body>
     <div class="app_container">
         <!-- Banner & Header Section -->
-        <header class="hero_section" style="position: relative;">
+        <header class="hero_section">
+            <!-- Nút README đối xứng bên góc trái -->
+            <button id="readme_toggle_btn" title="Hướng dẫn / README">
+                <i class="fa-solid fa-book-open"></i>
+                <span>README</span>
+            </button>
+
+            <!-- Nút Chế độ tối ở góc phải -->
             <button id="theme_toggle_btn" title="Chuyển đổi giao diện">
                 <i class="fa-solid fa-moon"></i>
                 <span class="theme_text">Chế độ tối</span>
@@ -119,12 +126,37 @@
             </div>
             <div class="search_box">
                 <i class="fa-regular fa-calendar-days search_icon"></i>
-                <input type="text" id="search_date_input" placeholder="Tìm theo Ngày (VD: #03/06/2026)" autocomplete="off">
+                <input type="text" id="search_date_input" placeholder="Tìm theo Ngày (VD: #20/08/2026)" autocomplete="off">
             </div>
         </section>
 
         <!-- Danh sách Confessions -->
         <main id="confession_list"></main>
+    </div>
+
+    <!-- Modal README / Hướng dẫn -->
+    <div id="readme_modal" class="readme_modal_overlay">
+        <div class="readme_modal_content">
+            <button type="button" id="close_readme_btn" class="close_readme_btn" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
+            <h2><i class="fa-solid fa-book-open" style="color: var(--accent-color);"></i> Hướng dẫn & Giới thiệu (README)</h2>
+            <div class="readme_body">
+                <h3>📌 Về trang web</h3>
+                <p>Đây là kênh Confession ẩn danh dành riêng cho học sinh trường THPT Nguyễn Hùng Sơn (NHS), nơi các bạn chia sẻ tâm sự, cảm xúc và gửi gắm những lời nhắn nhủ.</p>
+                
+                <h3>🔍 Cách sử dụng tính năng tìm kiếm</h3>
+                <ul>
+                    <li><strong>Tìm theo ID:</strong> Nhập mã ID bài viết vào ô tìm kiếm (Ví dụ: gõ <code>#001</code> hoặc <code>1</code>).</li>
+                    <li><strong>Tìm theo Ngày:</strong> Nhập định dạng ngày tháng kèm dấu # (Ví dụ: gõ <code>#20/08/2026</code>).</li>
+                </ul>
+
+                <h3>💬 Bình luận & Tương tác</h3>
+                <ul>
+                    <li>Nhấn vào bài viết bất kỳ để phóng to (xem chi tiết) và đọc/gửi bình luận.</li>
+                    <li>Thả tim (❤️) để bày tỏ cảm xúc với các bài viết bạn yêu thích.</li>
+                    <li>Tất cả bình luận và bài gửi đều được kiểm duyệt trước khi hiển thị công khai để duy trì môi trường tích cực.</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- Lớp phủ làm mờ nền -->
