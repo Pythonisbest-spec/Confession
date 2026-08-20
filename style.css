@@ -1,6 +1,10 @@
-/* 19:08 
-   20/08/2026
+
+/*  23:54
+    20/08/2026
 */
+
+
+
 
 :root {
     --primary-color: #f43f5e;
@@ -888,16 +892,17 @@ h4 {
     background: var(--card-bg);
     border: 2px solid var(--card-border);
     border-radius: var(--radius-lg);
-    width: 600px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 580px;
     max-height: 85vh;
-    padding: 28px;
+    padding: 24px 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
     gap: 16px;
     position: relative;
     margin: auto;
+    box-sizing: border-box;
     animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -935,6 +940,7 @@ h4 {
     font-size: 0.92rem;
     color: var(--text-muted);
     line-height: 1.5;
+    word-break: break-word;
 }
 
 .readme_body ul {
@@ -949,8 +955,9 @@ h4 {
     padding: 2px 6px;
     border-radius: 4px;
     font-family: monospace;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--primary-color);
+    word-break: break-all;
 }
 
 [data-theme="dark"] .readme_body code {
@@ -984,6 +991,41 @@ h4 {
 [data-theme="dark"] .close_readme_btn {
     background: #334155;
     color: #f1f5f9;
+}
+
+/* --- Phần thông tin tác giả --- */
+.project_author {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1.5px dashed #cbd5e1;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    word-break: break-all;
+}
+
+.project_author a {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration: none; 
+    border-bottom: 1.5px solid var(--accent-color);
+    padding-bottom: 0px; /* Đã hạ xuống 0px để sát nét vào chân chữ */
+    line-height: 1.1;     /* Tùy chỉnh line-height cho vừa vặn */
+    transition: all 0.2s ease;
+    display: inline-block;
+}
+
+.project_author a:hover {
+    opacity: 0.7; 
+    border-bottom-width: 2px;
+}
+
+[data-theme="dark"] .project_author {
+    border-top-color: #334155;
 }
 
 @media (max-width: 960px) {

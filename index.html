@@ -1,7 +1,12 @@
+
+
 <!-- 
-    19:10
+    23:54
     20/08/2026
 -->
+
+
+
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -9,11 +14,11 @@
     <meta name="google-site-verification" content="Kl2HI9dTRaPNQqGXKYB61DK1MDTYh5cN4Vs-2LsCMAo" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NHS Confession - Confession THPT Nguyễn Hùng Sơn</title>
-    <meta name="description" content="Trang gửi và đọc confession ẩn danh dành cho học sinh THPT Nguyễn Hùng Sơn (NHS).">
-    <meta name="keywords" content="nhs confession, confession nhs, thpt nguyen hung son">
-    <meta property="og:title" content="NHS Confession">
-    <meta property="og:description" content="Kênh confession chính thức của NHS.">
+    <title>NHS Confessions - Kênh Confessions THPT Nguyễn Hùng Sơn</title>
+    <meta name="description" content="Trang gửi và đọc confessions ẩn danh dành cho học sinh trường THPT Nguyễn Hùng Sơn (NHS).">
+    <meta name="keywords" content="nhs confessions, confessions nhs, thpt nguyen hung son">
+    <meta property="og:title" content="NHS Confessions">
+    <meta property="og:description" content="Kênh confessions chính thức của NHS.">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="NHS.jpg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,13 +31,11 @@
     <div class="app_container">
         <!-- Banner & Header Section -->
         <header class="hero_section">
-            <!-- Nút README đối xứng bên góc trái -->
-            <button id="readme_toggle_btn" title="Hướng dẫn / README">
+            <button id="readme_toggle_btn" title="Hướng dẫn sử dụng / README">
                 <i class="fa-solid fa-book-open"></i>
                 <span>README</span>
             </button>
 
-            <!-- Nút Chế độ tối ở góc phải -->
             <button id="theme_toggle_btn" title="Chuyển đổi giao diện">
                 <i class="fa-solid fa-moon"></i>
                 <span class="theme_text">Chế độ tối</span>
@@ -43,33 +46,31 @@
             </div>
 
             <div class="header_titles">
-                <h1>Confession NHS</h1>
-                <h4><i class="fa-solid fa-clock-rotate-left"></i> Đợi admin duyệt mới lên bài được nhe</h4>
+                <h1>NHS Confessions</h1>
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Bài viết sẽ được hiển thị công khai sau khi được kiểm duyệt</h4>
             </div>
 
             <div id="chu_thich">
                 <i class="fa-solid fa-circle-info info_icon"></i>
-                <span>Mình tạo ra page này để các bạn <mark>bày tỏ cảm xúc với nhau cũng như với trường</mark>, vì vậy mình sẽ duyệt có chọn lọc giữa tích cực và tiêu cực nha.</span>
+                <span>Nơi chia sẻ tâm tư, kỷ niệm học đường THPT Nguyễn Hùng Sơn một cách văn minh và tích cực.</span>
             </div>
         </header>
 
         <!-- Form gửi Confession -->
         <section class="card_wrapper">
             <div id="send_confession">
-                <h3><i class="fa-solid fa-paper-plane"></i> Gửi confession ở đây</h3>
+                <h3><i class="fa-solid fa-paper-plane"></i> Gửi Confession</h3>
             </div>
 
             <form id="confession_form" autocomplete="off">
                 <div class="input_group">
                     <div class="textarea_wrapper">
-                        <textarea id="confession_input" rows="2" placeholder="Viết tâm sự ẩn danh của bạn tại đây... (Nhấn Enter để xuống dòng)"></textarea>
+                        <textarea id="confession_input" rows="2" placeholder="Nhập nội dung tâm sự ẩn danh của bạn tại đây... (Nhấn Enter để xuống dòng)"></textarea>
                         
-                        <!-- Nút emoji nằm gọn bên trong khung nhập -->
-                        <button type="button" class="emoji_toggle_btn inside_input" title="Chọn emoji">
+                        <button type="button" class="emoji_toggle_btn inside_input" title="Chọn biểu cảm">
                             <i class="fa-regular fa-face-smile"></i>
                         </button>
 
-                        <!-- Bảng chọn Emoji chính (hiển thị dạng popup nổi) -->
                         <div class="emoji_picker_container main_emoji_popup" style="display: none;">
                             <div class="emoji_picker">
                                 <span class="emoji_item" data-emoji="😊">😊</span>
@@ -109,7 +110,7 @@
                     </div>
 
                     <button type="submit">
-                        <span>Gửi</span>
+                        <span>Gửi bài</span>
                         <i class="fa-solid fa-arrow-up-from-bracket"></i>
                     </button>
                 </div>
@@ -121,11 +122,11 @@
         <section id="search_container">
             <div class="search_box">
                 <i class="fa-solid fa-hashtag search_icon"></i>
-                <input type="text" id="search_input" placeholder="Tìm theo Mã ID (VD: #001, #002...)" autocomplete="off">
+                <input type="text" id="search_input" placeholder="Tìm kiếm theo mã ID (Ví dụ: #001, #002...)" autocomplete="off">
             </div>
             <div class="search_box">
                 <i class="fa-regular fa-calendar-days search_icon"></i>
-                <input type="text" id="search_date_input" placeholder="Tìm theo Ngày (VD: #20/08/2026)" autocomplete="off">
+                <input type="text" id="search_date_input" placeholder="Tìm kiếm theo ngày (Ví dụ: #20/08/2026)" autocomplete="off">
             </div>
         </section>
 
@@ -136,29 +137,43 @@
     <!-- Modal README / Hướng dẫn -->
     <div id="readme_modal" class="readme_modal_overlay">
         <div class="readme_modal_content">
-            <button type="button" id="close_readme_btn" class="close_readme_btn" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
-            <h2><i class="fa-solid fa-book-open" style="color: var(--accent-color);"></i> Hướng dẫn & Giới thiệu (README)</h2>
+            <button type="button" id="close_readme_btn" class="close_readme_btn" title="Đóng bảng hướng dẫn"><i class="fa-solid fa-xmark"></i></button>
+            <h2><i class="fa-solid fa-book-open" style="color: var(--accent-color);"></i> Hướng dẫn sử dụng & Giới thiệu</h2>
             <div class="readme_body">
-                <h3>📌 Về trang web</h3>
-                <p>Đây là kênh Confession ẩn danh dành riêng cho học sinh trường THPT Nguyễn Hùng Sơn (NHS), nơi các bạn chia sẻ tâm sự, cảm xúc và gửi gắm những lời nhắn nhủ.</p>
+                <h3>📌 Về hệ thống</h3>
+                <p>Đây là kênh Confessions ẩn danh chính thức dành cho học sinh trường THPT Nguyễn Hùng Sơn (NHS), nơi các bạn gửi gắm tâm tư, tình cảm và những câu chuyện đáng nhớ trong môi trường học đường.</p>
                 
-                <h3>🔍 Cách sử dụng tính năng tìm kiếm</h3>
+                <h3>🔍 Hướng dẫn tìm kiếm</h3>
                 <ul>
-                    <li><strong>Tìm theo ID:</strong> Nhập mã ID bài viết vào ô tìm kiếm (Ví dụ: gõ <code>#001</code> hoặc <code>1</code>).</li>
-                    <li><strong>Tìm theo Ngày:</strong> Nhập định dạng ngày tháng kèm dấu # (Ví dụ: gõ <code>#20/08/2026</code>).</li>
+                    <li><strong>Tìm theo ID:</strong> Nhập mã định danh bài viết vào ô tìm kiếm (Ví dụ: <code>#001</code> hoặc <code>1</code>).</li>
+                    <li><strong>Tìm theo Ngày:</strong> Nhập ngày đăng kèm ký tự # ở đầu (Ví dụ: <code>#20/08/2026</code>).</li>
                 </ul>
 
                 <h3>💬 Bình luận & Tương tác</h3>
                 <ul>
-                    <li>Nhấn vào bài viết bất kỳ để phóng to (xem chi tiết) và đọc/gửi bình luận.</li>
-                    <li>Thả tim (❤️) để bày tỏ cảm xúc với các bài viết bạn yêu thích.</li>
-                    <li>Tất cả bình luận và bài gửi đều được kiểm duyệt trước khi hiển thị công khai để duy trì môi trường tích cực.</li>
+                    <li>Nhấn vào bất kỳ bài viết nào để xem toàn bộ nội dung chi tiết và tham gia bình luận.</li>
+                    <li>Thả biểu tượng cảm xúc (❤️) để bày tỏ sự yêu thích đối với bài viết.</li>
+                    <li>Toàn bộ bài gửi đều được hệ thống kiểm duyệt trước khi hiển thị công khai nhằm đảm bảo sự lành mạnh và văn minh chung.</li>
                 </ul>
+
+                <h3>⚠️ Lưu ý khi sử dụng</h3>
+                <p>Vì hệ thống chạy qua máy chủ trung gian nên đôi lúc sẽ bị chậm một chút khi có quá nhiều bạn truy cập cùng lúc. Nếu gửi bài hoặc tải trang bị chậm, bạn hãy kiên nhẫn đợi giây lát hoặc tải lại trang nhé!</p>
+
+                <div class="project_author">
+                    <span>A project by</span>
+                    <div>
+                        <a href="https://github.com/Pythonisbest-spec" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-github"></i> Pythonisbest-spec
+                        </a> &amp; 
+                        <a href="https://github.com/ntk15509" target="_blank" rel="noopener noreferrer">
+                            <i class="fa-brands fa-github"></i> ntk15509
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Lớp phủ làm mờ nền -->
     <div id="confession_backdrop"></div>
 
     <script src="script.js"></script>
