@@ -1,4 +1,3 @@
-
 /*  23:54
     20/08/2026
 */
@@ -159,11 +158,25 @@ function renderComment(comment) {
     }
     return item;
 }
+
 if (feedbackForm) {
     feedbackForm.addEventListener("submit", async (e) => {
         e.preventDefault();
+        
+        const feedbackSubmitBtn = feedbackForm.querySelector(".feedback_submit_btn");
+        if (feedbackSubmitBtn && feedbackSubmitBtn.dataset.loading === "true") {
+            return;
+        }
+
         const content = feedbackInput.value.trim();
         if (!content) return;
+
+        if (feedbackSubmitBtn) {
+            feedbackSubmitBtn.dataset.loading = "true";
+            feedbackSubmitBtn.disabled = true;
+            feedbackSubmitBtn.style.opacity = "0.7";
+            feedbackSubmitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Đang gửi...</span>`;
+        }
 
         feedbackStatus.textContent = "Đang gửi góp ý...";
         feedbackStatus.style.color = "var(--text-muted)";
@@ -182,9 +195,17 @@ if (feedbackForm) {
             console.error("Lỗi gửi phản hồi:", err);
             feedbackStatus.textContent = "Không thể gửi phản hồi. Vui lòng thử lại sau!";
             feedbackStatus.style.color = "#f43f5e";
+        } finally {
+            if (feedbackSubmitBtn) {
+                feedbackSubmitBtn.dataset.loading = "false";
+                feedbackSubmitBtn.disabled = false;
+                feedbackSubmitBtn.style.opacity = "1";
+                feedbackSubmitBtn.textContent = "Gửi góp ý";
+            }
         }
     });
 }
+
 const sharedEmojiListHTML = `
     <div class="emoji_picker">
         <span class="emoji_item" data-emoji="😊">😊</span>

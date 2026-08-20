@@ -1,4 +1,3 @@
-
 /*  23:54
     20/08/2026
 */
@@ -563,7 +562,7 @@ h4 {
     color: var(--text-main);
     cursor: pointer;
     transition: all 0.2s ease;
-    z-index: 1000;
+    z-index: 100;
 }
 
 .close_modal_btn:hover {
@@ -1013,8 +1012,8 @@ h4 {
     font-weight: 700;
     text-decoration: none; 
     border-bottom: 1.5px solid var(--accent-color);
-    padding-bottom: 0px; /* Đã hạ xuống 0px để sát nét vào chân chữ */
-    line-height: 1.1;     /* Tùy chỉnh line-height cho vừa vặn */
+    padding-bottom: 0px; 
+    line-height: 1.1;     
     transition: all 0.2s ease;
     display: inline-block;
 }
@@ -1187,6 +1186,7 @@ body.confession-modal-open {
 .box.modal_focused .comment_list {
     max-height: 250px;
 }
+
 .feedback_form {
     display: flex;
     flex-direction: column;
@@ -1227,9 +1227,16 @@ body.confession-modal-open {
     border: none;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.2s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .feedback_submit_btn:hover {
     background: #4f46e5;
+}
+
+.feedback_submit_btn:disabled {
+    cursor: not-allowed;
 }
