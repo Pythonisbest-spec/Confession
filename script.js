@@ -7,7 +7,7 @@
 
 
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzQW25_w_EmNgBsBR2Ud7_dj2Ev6hwjp-G3qLqLwWARGHuCFRin9MOrIeLkRkSuIc8aYg/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxE3PM6UWnfrMUA2ODH176_ibitwEHyBOwcqDfvA432qIG2I6jpUIkLGPxBFbh4LpfEWA/exec";
 const LIKED_KEY = "nhs_liked_ids_v2";
 const MAX_LENGTH = 20000;
 
@@ -18,6 +18,9 @@ const list = document.querySelector("#confession_list");
 const searchInput = document.querySelector("#search_input");
 const searchDateInput = document.querySelector("#search_date_input");
 const backdrop = document.querySelector("#confession_backdrop");
+const feedbackForm = document.querySelector("#readme_feedback_form");
+const feedbackInput = document.querySelector("#feedback_input");
+const feedbackStatus = document.querySelector("#feedback_status");
 
 let likedIds = loadLikedIds();
 let currentConfessions = [];
@@ -156,7 +159,32 @@ function renderComment(comment) {
     }
     return item;
 }
+if (feedbackForm) {
+    feedbackForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const content = feedbackInput.value.trim();
+        if (!content) return;
 
+        feedbackStatus.textContent = "Đang gửi góp ý...";
+        feedbackStatus.style.color = "var(--text-muted)";
+
+        try {
+            await fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "feedback", content: content })
+            });
+            feedbackStatus.textContent = "Cảm ơn bạn đã góp ý! Phản hồi đã được ghi nhận.";
+            feedbackStatus.style.color = "#10b981";
+            feedbackInput.value = "";
+        } catch (err) {
+            console.error("Lỗi gửi phản hồi:", err);
+            feedbackStatus.textContent = "Không thể gửi phản hồi. Vui lòng thử lại sau!";
+            feedbackStatus.style.color = "#f43f5e";
+        }
+    });
+}
 const sharedEmojiListHTML = `
     <div class="emoji_picker">
         <span class="emoji_item" data-emoji="😊">😊</span>

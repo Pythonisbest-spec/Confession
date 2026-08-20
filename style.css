@@ -1187,3 +1187,49 @@ body.confession-modal-open {
 .box.modal_focused .comment_list {
     max-height: 250px;
 }
+.feedback_form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.feedback_form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    border: 1.5px solid #cbd5e1;
+    border-radius: var(--radius-sm);
+    background: #ffffff;
+    outline: none;
+    resize: none;
+    transition: border-color 0.2s;
+}
+
+[data-theme="dark"] .feedback_form textarea {
+    background: #0f172a;
+    border-color: #475569;
+    color: #f1f5f9;
+}
+
+.feedback_form textarea:focus {
+    border-color: var(--accent-color);
+}
+
+.feedback_submit_btn {
+    align-self: flex-end;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background: var(--accent-color);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.feedback_submit_btn:hover {
+    background: #4f46e5;
+}
