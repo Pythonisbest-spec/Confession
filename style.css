@@ -998,11 +998,11 @@ h4 {
     }
 
     .hero_section {
-        padding: 60px 16px 20px;
+        padding: 65px 16px 20px;
         align-items: center;
     }
 
-    #theme_toggle_btn, #readme_toggle_btn {
+    #readme_toggle_btn, #theme_toggle_btn {
         position: absolute;
         top: 14px;
         padding: 6px 12px;
