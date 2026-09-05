@@ -23,6 +23,6 @@ Vì hệ thống chạy qua máy chủ trung gian nên đôi lúc sẽ bị ch�
 <div class="project_author">
   <span>A project by</span>
   <div>
-    <a href="https://github.com/Pythonisbest-spec" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i> Pythonisbest-spec</a> &amp; <a href="https://github.com/ntk15509" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i> ntk15509</a>
+    <a href="https://github.com/Pythonisbest-spec" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i> Pythonisbest-spec</a> &amp; <a href="https://github.com/ntk15509" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i> ntk15509</a> &amp; <a href="https://github.com/minhh2009" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github"></i> minhh2009</a>
   </div>
 </div>
